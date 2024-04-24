@@ -15,7 +15,7 @@ from numpy import zeros, where, mgrid, diff, array
 #%% Terms Precalculator
 def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, boundz_upp,
                     dimx, dimy, dimz,
-                    A = array([[0,0,0],[0,0,0],[0,0,0]]), B = [0,0,0],
+                    A = array([[0,0,0],[0,0,0],[0,0,0]]),
                     coeff_x = 1, coeff_y = 1, coeff_z = 1,
                     bc = 0):
     """Returns dictionary of discretized form of momentum operators & respective identities.

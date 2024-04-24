@@ -31,7 +31,7 @@ coeff_z = 0.1
 
 needed_arrays = preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, boundz_upp, 
                                 dimx, dimy, dimz, 
-                                A = np.array([[0,0,0],[0,0,0],[0,0,0]]), B = [0,0,0],
+                                A = np.array([[0,0,0],[0,0,0],[0,0,0]]),
                                 coeff_x = coeff_x, coeff_y = coeff_y, coeff_z = coeff_z, bc = 0)
 
 #%% Obtainin full hamiltonian
