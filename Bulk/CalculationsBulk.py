@@ -25,13 +25,15 @@ boundy_upp = 1 # upper bound in y
 boundz_low = -1 # lower bound in z
 boundz_upp = 1 # upper bound in z
 
-coeff_x = 1
-coeff_y = 1
-coeff_z = 0.1
+coeff_x = 1 # coefficient determining half length of well in x direction
+coeff_y = 1 # coefficient determining half length of well in y direction
+coeff_z = 0.1 # coefficient determining half length of well in z direction
+
+A = np.array([[0,0,0,0],[0,0,0,0],[0,0,0,0]]) # vector potential
 
 needed_arrays = preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, boundz_upp, 
                                 dimx, dimy, dimz, 
-                                A = np.array([[0,0,0,0],[0,0,0,0],[0,0,0,0]]),
+                                A = A,
                                 coeff_x = coeff_x, coeff_y = coeff_y, coeff_z = coeff_z, bc = 0)
 
 #%% Obtainin full hamiltonian
