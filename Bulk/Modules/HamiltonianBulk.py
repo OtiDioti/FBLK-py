@@ -15,7 +15,7 @@ from numpy import zeros, where, mgrid, diff, array
 #%% Terms Precalculator
 def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, boundz_upp,
                     dimx, dimy, dimz,
-                    A = array([[0,0,0],[0,0,0],[0,0,0]]),
+                    A = array([[0,0,0,0],[0,0,0,0],[0,0,0,0]]),
                     coeff_x = 1, coeff_y = 1, coeff_z = 1,
                     bc = 0):
     """Returns dictionary of discretized form of momentum operators & respective identities.
@@ -23,9 +23,9 @@ def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, 
     dimx, dimy, dimz are discretization numbers along each direction.
     
     A is the vector potential to be used in minimal coup. substitution. This is of the form 
-                            A = (Ax_x * x + Ax_y * y + Ax_z * z, 
-                                 Ay_x * x + Ay_y * y + Ay_z * z, 
-                                 Az_x * x + Az_y * y + Az_z * z) 
+                            A = (Ax_x * x + Ax_y * y + Ax_z * z + Ax_c, 
+                                 Ay_x * x + Ay_y * y + Ay_z * z + Ay_c, 
+                                 Az_x * x + Az_y * y + Az_z * z + Az_c) 
     where x,y,z are the position operators, and Ai_j is the ith component of A multipling the j operator in that component.
     
     B is magnetic field vector.
@@ -46,6 +46,7 @@ def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, 
     Ix = eye(dimx) # identity in x-space
     Iy = eye(dimy) # identity in y-space
     Iz = eye(dimz) # identity in z-space
+    I = kron(kron(Ix, Iy), Iz) # identity in all space
     
     # obtaining position operators
     x, y, z = [kron(kron(diags(X[:,0,0]), Iy), Iz), 
@@ -53,9 +54,9 @@ def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, 
                kron(kron(Ix, Iy), diags(Z[0,0,:]))] # position operators
     
     # creating vector potential from A coefficient list
-    Ax = A[0][0] * x + A[0][1] * y + A[0][2] * z # x component of vector potential
-    Ay = A[1][0] * x + A[1][1] * y + A[1][2] * z # y component of vector potential
-    Az = A[2][0] * x + A[2][1] * y + A[2][2] * z # z component of vector potential
+    Ax = A[0][0] * x + A[0][1] * y + A[0][2] * z + A[0][3] * I # x component of vector potential
+    Ay = A[1][0] * x + A[1][1] * y + A[1][2] * z + A[1][3] * I # y component of vector potential
+    Az = A[2][0] * x + A[2][1] * y + A[2][2] * z + A[2][3] * I # z component of vector potential
     
     """
     # obtaining momentum operators
