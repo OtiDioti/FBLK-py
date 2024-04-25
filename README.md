@@ -11,11 +11,11 @@ The four bands Luttinger Kohn Hamiltonian allows for a detailed description of t
 
 ## Features
 
-* Finite Element Method Solver: The repository includes an implementation of the finite element method (FEM) to solve the four bands Luttinger Kohn Hamiltonian numerically. FEM is a powerful technique for solving partial differential equations, making it well-suited for accurately capturing the behavior of electrons in materials described by the Hamiltonian.
+* **Finite Element Method Solver**: The repository includes an implementation of the finite element method (FEM) to solve the four bands Luttinger Kohn Hamiltonian numerically. FEM is a powerful technique for solving partial differential equations, making it well-suited for accurately capturing the behavior of electrons/holes in materials described by the Hamiltonian.
 
-* Customizable Parameters: Users can easily customize parameters such as material properties, external potentials, and boundary conditions to study different scenarios and explore the effects of various factors on the electronic structure.
+* **Customizable Parameters**: Users can easily customize parameters such as Luttinger parametes, external potentials, and boundary conditions to study different scenarios and explore the effects of various factors on the electronic structure.
 
-* Visualization Tools: The repository includes tools for visualizing the results of the simulations, allowing users to gain insights into the electronic properties of the materials under investigation. Visualization aids in interpreting the simulation results and identifying important features of the ele ctronic structure.
+* **Visualization Tools**: The repository includes tools for visualizing the results of the simulations, allowing users to gain insights into the electronic properties of the materials under investigation. Visualization aids in interpreting the simulation results and identifying important features of the ele ctronic structure.
 
 ## Usage
 
