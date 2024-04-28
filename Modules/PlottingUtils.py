@@ -4,8 +4,6 @@ import matplotlib.ticker as tkr
 from matplotlib.ticker import AutoMinorLocator
 import plotly.graph_objects as go
 import plotly.io as pio
-pio.renderers.default='browser'
-# import seaborn as sns
 #%% Colors I like
 RdBu = plt.cm.get_cmap('RdBu')
 BuRd = RdBu.reversed()
@@ -81,7 +79,10 @@ def IsoSurface(A, X, Y, Z,
                iso_min = None, iso_max = None,
                iso_surf_n = 3,
                color_scale = 'RdBu_r', opacity = 0.6,
-               x_show_caps = False, y_show_caps = False):
+               x_show_caps = False, y_show_caps = False,
+               where_to_plot = "browser"):
+    
+    pio.renderers.default = where_to_plot
     
     fig = go.Figure(data=go.Isosurface(
         x = X.flatten(),
@@ -97,3 +98,14 @@ def IsoSurface(A, X, Y, Z,
         caps=dict(x_show=x_show_caps, y_show=y_show_caps)
         ))
     fig.show()
+
+def plot_3D(X, Y, Z, 
+            ax,
+            title = "plot_tile", 
+            cmap = BuRd):
+    
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                cmap = cmap, edgecolor = 'none')
+    ax.set_title(title);
+    
+
