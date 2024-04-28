@@ -14,9 +14,9 @@ from PlottingUtils import IsoSurface
 from scipy.sparse.linalg import eigsh
 import numpy as np
 #%% creating meshgrid for x,y,z
-dimx = 30 # discretization nr in x
-dimy = 30 # discretization nr in y
-dimz = 30 # discretization nr in z
+dimx = 130 # discretization nr in x
+dimy = 130 # discretization nr in y
+dimz = 130 # discretization nr in z
 
 boundx_low = -1 # lower bound in x
 boundx_upp = 1 # upper bound in x
@@ -42,7 +42,7 @@ needed_arrays = preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, 
 H, u = h_tot(needed_arrays, 
              g1 = 13.35, g2 = 4.25, g3 = 5.69,
              kappa = 1, B = [0,0,0], infinity = 1e10,
-             conf = "planar")
+             conf = "wire")
 #%% Obtaining Eigvals and Eigvects
 eigvals, eigvects = eigsh(H, k = 3, which = "SM") # for CPU
 eigvects = eigvects / np.linalg.norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors

@@ -16,9 +16,9 @@ from scipy.sparse.linalg import eigsh
 import numpy as np
 from tqdm import trange
 #%% creating meshgrid for x,y,z
-dimx = 30 # discretization nr in x
-dimy = 30 # discretization nr in y
-dimz = 30 # discretization nr in z
+dimx = 50 # discretization nr in x
+dimy = 50 # discretization nr in y
+dimz = 50 # discretization nr in z
 
 boundx_low = -1 # lower bound in x
 boundx_upp = 1 # upper bound in x
@@ -29,7 +29,7 @@ boundy_upp = 1 # upper bound in y
 boundz_low = -1 # lower bound in z
 boundz_upp = 1 # upper bound in z
 
-coeff_x = 1 # coefficient determining half length of well in x direction
+coeff_x = 0.1 # coefficient determining half length of well in x direction
 coeff_y = 1 # coefficient determining half length of well in y direction
 coeff_z = 0.1 # coefficient determining half length of well in z direction
 
@@ -55,7 +55,7 @@ for i in trange(points): # varying magnetic field strength
     H, u = h_tot(needed_arrays, 
                  g1 = 13.35, g2 = 4.25, g3 = 5.69,
                  kappa = 1, B = [0,0,bz], infinity = 1e10,
-                 conf = "bulk") # obtaining hamiltonian
+                 conf = "wire") # obtaining hamiltonian
     
     eigvals, eigvects = eigsh(H, k = 3, which = "SM") # for CPU
     eigvects = eigvects / np.linalg.norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
@@ -63,9 +63,9 @@ for i in trange(points): # varying magnetic field strength
     eigenvalues[i] = eigvals
     eigenvectors[i] = eigvects.T.reshape((k, dimx, dimy, dimz, 4))
 #%% Plotting
-# LinePlot(bvals, eigenvalues.T, multiple_lines=True, label = ["e1", "e2", "e3"])
+LinePlot(bvals, eigenvalues.T, multiple_lines=True, label = ["e1", "e2", "e3"])
 
-p_dist = np.sum(np.abs(eigenvectors[-1,2])**2, axis = 3)
+p_dist = np.sum(np.abs(eigenvectors[0,1])**2, axis = 3)
 
 IsoSurface(p_dist, needed_arrays["grids"]["X"], needed_arrays["grids"]["Y"], needed_arrays["grids"]["Z"],
            iso_min = 1e-5, iso_max = None,
