@@ -3,7 +3,8 @@
 ## Overview
 
 This repository contains an implementation of a numerical approach to fully solve the four bands Luttinger Kohn Hamiltonian using the finite element method. The solver is designed to accurately calculate the electronic structure of materials described by the four bands Luttinger Kohn Hamiltonian, providing insights into their physical properties.
-Background
+
+## Background
 
 The Luttinger-Kohn model is a widely used theoretical framework in condensed matter physics for describing the electronic structure of semiconductors and other materials. It provides a comprehensive understanding of the behavior of charge carriers in the presence of external potentials and perturbations.
 
