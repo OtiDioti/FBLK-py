@@ -3,8 +3,9 @@
 # my imports
 import sys
 import os
-current_path = os.path.dirname(os.path.realpath(__file__)) + "/Modules"
-sys.path.append(current_path)
+dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory
+prev_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) # parent of current directory
+sys.path.append(prev_dir+'/Modules') # appending modules folder
 from HamiltonianBulk import preparing_terms, h_tot
 
 # plotting imports
@@ -14,9 +15,9 @@ from PlottingUtils import IsoSurface
 from scipy.sparse.linalg import eigsh
 import numpy as np
 #%% creating meshgrid for x,y,z
-dimx = 130 # discretization nr in x
-dimy = 130 # discretization nr in y
-dimz = 130 # discretization nr in z
+dimx = 10 # discretization nr in x
+dimy = 10 # discretization nr in y
+dimz = 10 # discretization nr in z
 
 boundx_low = -1 # lower bound in x
 boundx_upp = 1 # upper bound in x
