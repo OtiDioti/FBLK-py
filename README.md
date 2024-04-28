@@ -1,4 +1,4 @@
-# FourBandsLuttingerKohn
+# Four Bands Luttinger Kohn
 
 ## Overview
 
