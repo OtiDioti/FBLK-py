@@ -30,7 +30,7 @@ st.set_page_config(page_title = 'FBLK',
                    initial_sidebar_state="collapsed")
 
 #%% setting page layout
-row1 = st.columns(2) # first row has 2 colums
+row1 = st.columns(2) # first row has 3 colums
 row2 = st.columns(2) # second row has 2 columns
 row3 = st.columns(2) # third row has 2 colums
 #%% Determining the problem size
@@ -166,6 +166,7 @@ with r2_2:
                        disabled=False, 
                        use_container_width=True)
     state_chart = st.empty() # initializing empty plot
+    energy_val = st.empty() # initializing energy value
 
     if button:
         hamiltonian = h_tot(needed_terms, 
@@ -204,6 +205,7 @@ with r2_2:
             ))
         
         state_chart.plotly_chart(fig_state, use_container_width=True)
+        energy_val.write(f"E = {eigvals[n_level]}")
 
         
     
