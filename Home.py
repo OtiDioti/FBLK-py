@@ -35,7 +35,6 @@ st.divider()
 #%% setting page layout
 row1 = st.columns(3) # first row has 3 colums
 row2 = st.columns(2) # second row has 2 columns
-row3 = st.columns(2) # third row has 2 colums
 #%% Determining the problem size
 r1_1 = row1[0].container()
 with r1_1:
@@ -114,7 +113,7 @@ with r1_3:
                            min_value=0.0, max_value=None, 
                            value = 1.0 , step=None, format=None, 
                            help=r"""Select the value for the magnetic g-factor of the system.""",
-                           label_visibility="visible") # discretization number in z-direction
+                           label_visibility="visible") # value of magnetic g-factor.
     A = 0.5 * array([[0,-Bz,By,0],[Bz,0,-Bx,0],[-By,Bx,0,0]]) # general vector potential for B ) (Bx, By, Bz)
 #%% Potential Plot container 
 r2_1 = row2[0].container()
@@ -222,7 +221,7 @@ with r2_2:
                                   min_value=0, max_value= int(nr_of_soln - 1), 
                                    value = 0 , step=None, format=None, 
                                    help="""Select the energy level to display.""",
-                                   label_visibility="visible") # discretization number in z-direction
+                                   label_visibility="visible") # energy level index
         
         p_dist = Sum(Abs(get_v(n_level))**2, axis = 3)
 

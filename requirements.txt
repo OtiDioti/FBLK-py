@@ -158,6 +158,7 @@ spyder-kernels==2.5.1
 st-annotated-text==4.0.1
 st-pages==0.4.5
 stack-data==0.6.3
+stqdm==0.0.5
 streamlit==1.33.0
 streamlit-camera-input-live==0.2.0
 streamlit-card==1.0.0
