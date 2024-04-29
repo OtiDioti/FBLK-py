@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains an implementation of a numerical approach to fully solve the four bands Luttinger Kohn Hamiltonian using the finite element method. The solver is designed to accurately calculate the electronic structure of materials described by the four bands Luttinger Kohn Hamiltonian, providing insights into their physical properties.
+This repository contains an implementation of a numerical approach to fully solve the four bands Luttinger Kohn Hamiltonian using the finite element method. The solver is designed to accurately calculate the electronic structure of materials described by the four bands Luttinger Kohn Hamiltonian, providing insights into their physical properties. (Note: all units are to be considered in a.u., where $\hbar = m = e =1$.)
 
 ## Background
 
