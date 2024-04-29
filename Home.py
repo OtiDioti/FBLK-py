@@ -28,7 +28,8 @@ st.set_page_config(page_title = 'FBLK',
                    'Report a bug': "https://github.com/OtiDioti/FBLK-py/issues",
                    'About': "**The app is work in progress: any comment/suggestion/request is welcome!**"},
                    initial_sidebar_state="collapsed")
-
+st.title("The time-independent problem.")
+st.divider()
 #%% setting page layout
 row1 = st.columns(3) # first row has 3 colums
 row2 = st.columns(2) # second row has 2 columns
@@ -239,8 +240,7 @@ with r2_2:
         state_chart.plotly_chart(fig_state, use_container_width=True)
         energy_val.write(f"E = {eigvals[n_level]}")
 
-        
-    
+
         
     
         
