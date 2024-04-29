@@ -7,8 +7,7 @@ This repository contains an implementation of a numerical approach to fully solv
 ## Background
 
 The Luttinger-Kohn model is a widely used theoretical framework in condensed matter physics for describing the electronic structure of semiconductors and other materials. It provides a comprehensive understanding of the behavior of charge carriers in the presence of external potentials and perturbations.
-
-The four bands Luttinger Kohn Hamiltonian allows for a detailed description of the electronic structure in materials with complex band structures, such as semiconductors with multiple valleys or anisotropic band dispersions.
+Thus, a detailed description of the electronic structure in materials with complex band structures, such as semiconductors with multiple valleys or anisotropic band dispersions can be achieved through this formalism.
 
 ## Features
 ![Alt text](/Images/ground_state_planar_geometry.png)
