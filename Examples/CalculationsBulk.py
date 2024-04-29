@@ -15,9 +15,9 @@ from PlottingUtils import IsoSurface
 from scipy.sparse.linalg import eigsh
 import numpy as np
 #%% creating meshgrid for x,y,z
-dimx = 10 # discretization nr in x
-dimy = 10 # discretization nr in y
-dimz = 10 # discretization nr in z
+dimx = 30 # discretization nr in x
+dimy = 30 # discretization nr in y
+dimz = 30 # discretization nr in z
 
 boundx_low = -1 # lower bound in x
 boundx_upp = 1 # upper bound in x
@@ -47,12 +47,16 @@ H, u = h_tot(needed_arrays,
 #%% Obtaining Eigvals and Eigvects
 eigvals, eigvects = eigsh(H, k = 3, which = "SM") # for CPU
 eigvects = eigvects / np.linalg.norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+eigvects = np.array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+eigvals = np.array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
 #%% plotting eigenfunction isosurfaces
 def get_v(n):
-    return eigvects.T[n].reshape((dimx, dimy, dimz, 4))
+    return eigvects[n].reshape((dimx, dimy, dimz, 4))
 
 
-p_dist = np.sum(np.abs(get_v(1))**2, axis = 3)
+p_dist = np.sum(np.abs(get_v(2))**2, axis = 3)
 
 IsoSurface(p_dist, needed_arrays["grids"]["X"], needed_arrays["grids"]["Y"], needed_arrays["grids"]["Z"],
            iso_min = 1e-5, iso_max = None,

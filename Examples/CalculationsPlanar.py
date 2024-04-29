@@ -1,8 +1,9 @@
 # my imports
 import sys
 import os
-current_path = os.path.dirname(os.path.realpath(__file__)) + "/Modules"
-sys.path.append(current_path)
+dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory
+prev_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) # parent of current directory
+sys.path.append(prev_dir+'/Modules') # appending modules folder
 from HamiltonianPlanar import preparing_terms, h_tot_spherical
 
 # plotting imports

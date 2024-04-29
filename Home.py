@@ -175,12 +175,16 @@ with r2_2:
                   conf = "wire")[0]
         eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
         eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+        tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+        sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+        eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+        eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
         st.session_state['eig-solns'] = [eigvals, eigvects] # storing in session state
         
     if 'eig-solns' in st.session_state: # if we calculated the solutions
         eigvals, eigvects = st.session_state['eig-solns']
         def get_v(n):
-            return eigvects.T[n].reshape((dimx, dimy, dimz, 4))
+            return eigvects[n].reshape((dimx, dimy, dimz, 4))
         
         n_level = st.number_input("Energy level", 
                                   min_value=0, max_value= int(nr_of_soln - 1), 
