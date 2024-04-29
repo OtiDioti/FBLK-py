@@ -30,7 +30,7 @@ st.set_page_config(page_title = 'FBLK',
                    initial_sidebar_state="collapsed")
 
 #%% setting page layout
-row1 = st.columns(2) # first row has 3 colums
+row1 = st.columns(3) # first row has 3 colums
 row2 = st.columns(2) # second row has 2 columns
 row3 = st.columns(2) # third row has 2 colums
 #%% Determining the problem size
@@ -85,6 +85,34 @@ with r1_2:
                            value = 5.69 , step=None, format=None, 
                            help=r"""Select the value for the luttinger parameter $\gamma_3$. Default: Ge.""",
                            label_visibility="visible") # discretization number in z-direction
+#%% Settign magnetic field
+r1_3 = row1[2].container()
+with r1_3:
+    st.title("Magnetic Field")
+    ### Pick discretization number in three dimensions
+    Bx = st.number_input(r"$B_x$", 
+                           min_value=0.0, max_value=None, 
+                           value = 0.0, step=None, format=None, 
+                           help=r"""Select the value for the x-component of the magnetic field.""",
+                           label_visibility="visible") # discretization number in x-direction
+    
+    By = st.number_input(r"$B_y$", 
+                           min_value=0.0, max_value=None, 
+                           value = 0.0 , step=None, format=None, 
+                           help=r"""Select the value for the y-component of the magnetic field.""",
+                           label_visibility="visible") # discretization number in y-direction
+    
+    Bz = st.number_input(r"$B_z$", 
+                           min_value=0.0, max_value=None, 
+                           value = 0.0 , step=None, format=None, 
+                           help=r"""Select the value for the z-component of the magnetic field.""",
+                           label_visibility="visible") # discretization number in z-direction
+    kappa = st.number_input(r"$\kappa$", 
+                           min_value=0.0, max_value=None, 
+                           value = 1.0 , step=None, format=None, 
+                           help=r"""Select the value for the magnetic g-factor of the system.""",
+                           label_visibility="visible") # discretization number in z-direction
+    A = 0.5 * array([[0,-Bz,By,0],[Bz,0,-Bx,0],[-By,Bx,0,0]]) # general vector potential for B ) (Bx, By, Bz)
 #%% Potential Plot container 
 r2_1 = row2[0].container()
 with r2_1:
@@ -126,7 +154,7 @@ with r2_1:
                                    boundy_low, boundy_upp, 
                                    boundz_low, boundz_upp,
                                    dimx, dimy, dimz,
-                                   A = array([[0,0,0,0],[0,0,0,0],[0,0,0,0]]),
+                                   A = A,
                                    coeff_x = 1, coeff_y = 1, coeff_z = 1,
                                    bc = 0)
     
@@ -171,7 +199,7 @@ with r2_2:
     if button:
         hamiltonian = h_tot(needed_terms, 
                   g1 = g1, g2 = g2, g3 = g3,
-                  kappa = 1, B = [0,0,0], infinity = 1e10,
+                  kappa = kappa, B = [Bx,By,Bz], infinity = 1e10,
                   conf = "wire")[0]
         eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
         eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
