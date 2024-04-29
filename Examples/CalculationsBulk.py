@@ -28,9 +28,9 @@ boundy_upp = 1 # upper bound in y
 boundz_low = -1 # lower bound in z
 boundz_upp = 1 # upper bound in z
 
-coeff_x = 0.1 # coefficient determining half length of well in x direction
+coeff_x = 1 # coefficient determining half length of well in x direction
 coeff_y = 1 # coefficient determining half length of well in y direction
-coeff_z = 0.1 # coefficient determining half length of well in z direction
+coeff_z = 1 # coefficient determining half length of well in z direction
 
 A = np.array([[0,0,0,0],[0,0,0,0],[0,0,0,0]]) # vector potential
 

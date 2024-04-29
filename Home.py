@@ -7,11 +7,11 @@ from HamiltonianBulk import get_potential_wire, preparing_terms, h_tot
 
 # plotting imports 
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.express as px
 
 # other imports
 import streamlit as st 
+from streamlit_extras.switch_page_button import switch_page
+from st_pages import Page, show_pages
 from numpy import array
 from numpy import sum as Sum
 from numpy import abs as Abs
@@ -29,6 +29,8 @@ st.set_page_config(page_title = 'FBLK',
                    'About': "**The app is work in progress: any comment/suggestion/request is welcome!**"},
                    initial_sidebar_state="collapsed")
 st.title("The time-independent problem.")
+show_pages([Page("Home.py", "Static problem"),
+            Page("pages/VariableBField.py", "Variable B-field")])
 st.divider()
 #%% setting page layout
 row1 = st.columns(3) # first row has 3 colums
