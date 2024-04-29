@@ -15,10 +15,12 @@ import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from numpy import array, linspace, zeros, transpose
 from stqdm import stqdm # tqdm-like progress bar
+from numpy import round as Round
 from numpy import sum as Sum
 from numpy import abs as Abs
 from numpy.linalg import norm
 from scipy.sparse.linalg import eigsh
+
 #%% page settings
 st.set_page_config(page_title = r"Variable B-field", 
                    layout = 'centered', 
@@ -225,14 +227,13 @@ with r2_2:
             eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
             eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
             eigenvalues[i] = eigvals # storing eigenvalues
-            eigenvectors[i] = eigvects.T.reshape((nr_of_soln, dimx, dimy, dimz, 4)) # storing eigenvectors
+            eigenvectors[i] = eigvects.reshape((nr_of_soln, dimx, dimy, dimz, 4)) # storing eigenvectors
             
         st.session_state['eig-solns'] = [eigenvalues, eigenvectors] # storing in session state
         
     if 'eig-solns' in st.session_state: # if we calculated the solutions
         eigvals, eigvects = st.session_state['eig-solns']
-        def get_v(bn, n):
-            return eigvects[bn, n].reshape((dimx, dimy, dimz, 4))
+    
         bn = st.number_input("$B$-value", 
                                   min_value=0, max_value= int(points - 1), 
                                    value = 0 , step=None, format=None, 
@@ -245,7 +246,7 @@ with r2_2:
                                    help="""Select the energy level to display.""",
                                    label_visibility="visible") # energy level index
         
-        p_dist = Sum(Abs(get_v(bn, n_level))**2, axis = 3)
+        p_dist = Sum(Abs(eigvects[bn, n_level])**2, axis = 3)
 
         fig_state = go.Figure(data=go.Isosurface(
             x = X.flatten(),
@@ -261,10 +262,11 @@ with r2_2:
             caps=dict(x_show=False, y_show=False)
             ))
         
+        
         state_chart.plotly_chart(fig_state, use_container_width=True)
-        energy_val.write(f"E = {eigvals[bn, n_level]}")
-        mag_val.write(f"B = ({Bx_vals[bn]},{By_vals[bn]},{Bz_vals[bn]}) ")
-        st.write(f"{eigvects.shape}")
+        energy_val.write(f"E = {Round(eigvals[bn, n_level],2)}")
+        mag_val.write(f"B = ({Round(Bx_vals[bn],2)},{Round(By_vals[bn],2)},{Round(Bz_vals[bn],2)}) ")
+        
 #%% Plotting energy vs B
 r3 = row3[0].container()
 with r3:
@@ -272,10 +274,5 @@ with r3:
         
     if 'eig-solns' in st.session_state: # if we calculated the solutions
         eigvals, eigvects = st.session_state['eig-solns']
-        labels = [] # list of labels
-        for i in range(nr_of_soln):
-            labels.append(f"$E_{i}$")
-        st.line_chart(data = eigvals)
-        # LinePlot(linspace(0, points, points), eigvals.T, multiple_lines=True, label = labels)
-        
+        st.line_chart(data = eigvals)        
 

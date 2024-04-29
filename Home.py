@@ -13,11 +13,11 @@ import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages
 from numpy import array
+from numpy import round as Round
 from numpy import sum as Sum
 from numpy import abs as Abs
 from numpy.linalg import norm
 from scipy.sparse.linalg import eigsh
-
 
 #%% page settings
 st.set_page_config(page_title = 'FBLK', 
@@ -240,7 +240,7 @@ with r2_2:
             ))
         
         state_chart.plotly_chart(fig_state, use_container_width=True)
-        energy_val.write(f"E = {eigvals[n_level]}")
+        energy_val.write(f"E = {Round(eigvals[n_level],2)}")
 
 
         

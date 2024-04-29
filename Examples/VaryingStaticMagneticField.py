@@ -62,7 +62,7 @@ for i in trange(points): # varying magnetic field strength
     eigvects = eigvects / np.linalg.norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
     
     eigenvalues[i] = eigvals
-    eigenvectors[i] = eigvects.T.reshape((k, dimx, dimy, dimz, 4))
+    eigenvectors[i] = eigvects.reshape((k, dimx, dimy, dimz, 4))
 #%% Plotting
 LinePlot(bvals, eigenvalues.T, multiple_lines=True, label = ["e1", "e2", "e3"])
 
