@@ -15,9 +15,9 @@ from PlottingUtils import IsoSurface
 from scipy.sparse.linalg import eigsh
 import numpy as np
 #%% creating meshgrid for x,y,z
-dimx = 30 # discretization nr in x
-dimy = 30 # discretization nr in y
-dimz = 30 # discretization nr in z
+dimx = 100 # discretization nr in x
+dimy = 100 # discretization nr in y
+dimz = 100 # discretization nr in z
 
 boundx_low = -1 # lower bound in x
 boundx_upp = 1 # upper bound in x
@@ -28,7 +28,7 @@ boundy_upp = 1 # upper bound in y
 boundz_low = -1 # lower bound in z
 boundz_upp = 1 # upper bound in z
 
-coeff_x = 1 # coefficient determining half length of well in x direction
+coeff_x = 0.1 # coefficient determining half length of well in x direction
 coeff_y = 1 # coefficient determining half length of well in y direction
 coeff_z = 0.1 # coefficient determining half length of well in z direction
 
@@ -56,7 +56,7 @@ def get_v(n):
     return eigvects[n].reshape((dimx, dimy, dimz, 4))
 
 
-p_dist = np.sum(np.abs(get_v(2))**2, axis = 3)
+p_dist = np.sum(np.abs(get_v(0))**2, axis = 3)
 
 IsoSurface(p_dist, needed_arrays["grids"]["X"], needed_arrays["grids"]["Y"], needed_arrays["grids"]["Z"],
            iso_min = 1e-5, iso_max = None,
