@@ -31,8 +31,8 @@ To use the solver, open the terminal and follow these steps:
   
     cd Desktop/
 * **Clone this repository**:
-  
-    git clone https://github.com/OtiDioti/FBLK-py.git
+
+  git clone https://github.com/OtiDioti/FBLK-py.git
 * **Move inside folder**:
     cd FBLK-py
 * **Create new conda enviroment**:
