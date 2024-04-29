@@ -28,22 +28,33 @@ The repository is divided into two separate methods:
 To use the solver, open the terminal and follow these steps:
 
 * **Move to desired directory** (in this case Desktop):
-  
+    ```
     cd Desktop/
+    ```
 * **Clone this repository**:
   
   ```
   git clone https://github.com/OtiDioti/FBLK-py.git
   ```
 * **Move inside folder**:
+    ```
     cd FBLK-py
+    ```
 * **Create new conda enviroment**:
+    ```
     conda create -n FBLK python==3.9
+    ```
 * **Install requirements**:
+    ```
     conda activate FBLK
+    ```
+    ```
     pip install -r requirements.txt
+    ```
 * **Run program**:
+    ```
     streamlit run Home.py
+    ```
   
 
 
