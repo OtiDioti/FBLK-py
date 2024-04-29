@@ -11,6 +11,7 @@ The Luttinger-Kohn model is a widely used theoretical framework in condensed mat
 The four bands Luttinger Kohn Hamiltonian allows for a detailed description of the electronic structure in materials with complex band structures, such as semiconductors with multiple valleys or anisotropic band dispersions.
 
 ## Features
+![Alt text](/Images/ground_state_planar_geometry.png)
 
 * **Finite Element Method Solver**: The repository includes an implementation of the finite element method (FEM) to solve the four bands Luttinger Kohn Hamiltonian numerically. FEM is a powerful technique for solving partial differential equations, making it well-suited for accurately capturing the behavior of electrons/holes in materials described by the Hamiltonian.
 
