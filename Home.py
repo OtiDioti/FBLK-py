@@ -88,7 +88,7 @@ with r1_2:
 #%% Potential Plot container 
 r2_1 = row2[0].container()
 with r2_1:
-    st.title("Define the confinement potential")
+    st.title("Confinement potential")
     chart = st.empty()
     
     boundx_low = -1 # lower bound in x
