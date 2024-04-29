@@ -31,6 +31,7 @@ To use the solver, open the terminal and follow these steps:
   
     cd Desktop/
 * **Clone this repository**:
+  
   '''
   git clone https://github.com/OtiDioti/FBLK-py.git
   '''
