@@ -22,7 +22,7 @@ from scipy.sparse.linalg import eigsh
 #%% page settings
 st.set_page_config(page_title = 'FBLK', 
                    layout = 'centered', 
-                   page_icon = ':house:',
+                   page_icon = ':atom_symbol:',
                    menu_items={
                    'Get Help': 'https://github.com/OtiDioti/FBLK-py/issues',
                    'Report a bug': "https://github.com/OtiDioti/FBLK-py/issues",
@@ -42,22 +42,22 @@ with r1_1:
     dimx = st.number_input("nr. of x-steps.", 
                            min_value=5, max_value=None, 
                            value = 30, step=None, format=None, 
-                           help="""Select the number of steps between to discretize x dimensions
+                           help="""Select the number of steps to discretize x dimension
                            between x = -1 and x = 1""",
                            label_visibility="visible") # discretization number in x-direction
     
     dimy = st.number_input("nr. of y-steps.", 
                            min_value=5, max_value=None, 
                            value = 30 , step=None, format=None, 
-                           help="""Select the number of steps between to discretize y dimensions
-                           between y = -1 and x = 1""",
+                           help="""Select the number of steps to discretize y dimension
+                           between y = -1 and y = 1""",
                            label_visibility="visible") # discretization number in y-direction
     
     dimz = st.number_input("nr. of z-steps.", 
                            min_value=5, max_value=None, 
                            value = 30 , step=None, format=None, 
-                           help="""Select the number of steps between to discretize z dimensions
-                           between z = -1 and x = 1""",
+                           help="""Select the number of steps to discretize z dimension
+                           between z = -1 and z = 1""",
                            label_visibility="visible") # discretization number in z-direction
     nr_of_soln = st.number_input("nr. of eigensolutions.", 
                            min_value=1, max_value=None, 
@@ -117,7 +117,8 @@ with r1_3:
 #%% Potential Plot container 
 r2_1 = row2[0].container()
 with r2_1:
-    st.title("Confinement potential")
+    st.title(r"Confinement $V(x,y,z)$")
+
     chart = st.empty()
     
     boundx_low = -1 # lower bound in x
