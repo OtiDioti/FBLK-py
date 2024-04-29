@@ -40,21 +40,21 @@ with r1_1:
     st.title("Problem's settings")
     ### Pick discretization number in three dimensions
     dimx = st.number_input("nr. of x-steps.", 
-                           min_value=5, max_value=None, 
+                           min_value=30, max_value=None, 
                            value = 30, step=None, format=None, 
                            help="""Select the number of steps to discretize x dimension
                            between x = -1 and x = 1""",
                            label_visibility="visible") # discretization number in x-direction
     
     dimy = st.number_input("nr. of y-steps.", 
-                           min_value=5, max_value=None, 
+                           min_value=30, max_value=None, 
                            value = 30 , step=None, format=None, 
                            help="""Select the number of steps to discretize y dimension
                            between y = -1 and y = 1""",
                            label_visibility="visible") # discretization number in y-direction
     
     dimz = st.number_input("nr. of z-steps.", 
-                           min_value=5, max_value=None, 
+                           min_value=30, max_value=None, 
                            value = 30 , step=None, format=None, 
                            help="""Select the number of steps to discretize z dimension
                            between z = -1 and z = 1""",
@@ -264,6 +264,7 @@ with r2_2:
         state_chart.plotly_chart(fig_state, use_container_width=True)
         energy_val.write(f"E = {eigvals[bn, n_level]}")
         mag_val.write(f"B = ({Bx_vals[bn]},{By_vals[bn]},{Bz_vals[bn]}) ")
+        st.write(f"{eigvects.shape}")
 #%% Plotting energy vs B
 r3 = row3[0].container()
 with r3:
