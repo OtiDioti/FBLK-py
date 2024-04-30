@@ -48,7 +48,7 @@ To use the solver, open the terminal and follow these steps:
     ```
 * **Run program**:
     ```
-    streamlit run Home.py
+    streamlit run GUI.py
     ```
   
 
