@@ -30,128 +30,134 @@ st.title("Four band Luttinger Kohn Hamiltonian")
 
 st.divider()
 #%% setting page layout
-row1 = st.columns(3) # first row has 3 colums
-row2 = st.columns(2) # second row has 2 columns
-row3 = st.columns(1) # third row has 1 column
+row1 = st.columns(5) # problem settings
+row2 = st.columns(5) # paramters picker
+row3 = st.columns(5) # magnetic field settings
+st.divider()
+st.write(r"## Confinement $V(x,y,z)$")
+row4 = st.columns(2) # potential plotter
+button = st.button("Calculate", key=None, 
+                   help="Click when ready to execute calculations.",
+                   disabled=False, 
+                   use_container_width=True)
+row5 = st.columns(2) # results row
+row6 = st.columns(1) # results row
+
 #%% Determining the problem size
-r1_1 = row1[0].container()
-with r1_1:
-    st.write("## Settings")
-    ### Pick discretization number in three dimensions
+with row1[0].container():
+    st.write("### Settings")
+### Pick discretization number in three dimensions
+with row1[1].container():
     dimx = st.number_input("nr. of x-steps.", 
                            min_value=30, max_value=None, 
                            value = 30, step=None, format=None, 
                            help="""Select the number of steps to discretize x dimension
                            between x = -1 and x = 1""",
                            label_visibility="visible") # discretization number in x-direction
-    
+with row1[2].container():
     dimy = st.number_input("nr. of y-steps.", 
                            min_value=30, max_value=None, 
                            value = 30 , step=None, format=None, 
                            help="""Select the number of steps to discretize y dimension
                            between y = -1 and y = 1""",
                            label_visibility="visible") # discretization number in y-direction
-    
+with row1[3].container():
     dimz = st.number_input("nr. of z-steps.", 
                            min_value=30, max_value=None, 
                            value = 30 , step=None, format=None, 
                            help="""Select the number of steps to discretize z dimension
                            between z = -1 and z = 1""",
                            label_visibility="visible") # discretization number in z-direction
-    nr_of_soln = st.number_input("nr. of eigensolutions.", 
+with row1[4].container():
+    nr_of_soln = st.number_input("eigensolutions nr.", 
                            min_value=1, max_value=None, 
                            value = 3 , step=None, format=None, 
                            help="""Select the number of solutions with lowest eigen energy to solve for.""",
                            label_visibility="visible") # discretization number in z-direction
+    
 #%% Selecting luttinger parameters
-r1_2 = row1[1].container()
-with r1_2:
-    st.write("## $\gamma$-parameters")
-    ### Pick discretization number in three dimensions
+with row2[0].container():
+    st.write("### Parameters")
+### Pick discretization number in three dimensions
+with row2[1].container():    
     g1 = st.number_input(r"$\gamma_1$", 
                            min_value=0.0, max_value=None, 
                            value = 13.35, step=None, format=None, 
                            help=r"""Select the value for the luttinger parameter $\gamma_1$. Default: Ge.""",
                            label_visibility="visible") # discretization number in x-direction
-    
+with row2[2].container():  
     g2 = st.number_input(r"$\gamma_2$", 
                            min_value=0.0, max_value=None, 
                            value = 4.25 , step=None, format=None, 
                            help=r"""Select the value for the luttinger parameter $\gamma_2$. Default: Ge.""",
                            label_visibility="visible") # discretization number in y-direction
-    
+with row2[3].container():  
     g3 = st.number_input(r"$\gamma_3$", 
                            min_value=0.0, max_value=None, 
                            value = 5.69 , step=None, format=None, 
                            help=r"""Select the value for the luttinger parameter $\gamma_3$. Default: Ge.""",
                            label_visibility="visible") # discretization number in z-direction
+with row2[4].container():  
+    kappa = st.number_input(r"$\kappa$", 
+                           min_value=0.0, max_value=None, 
+                           value = 1.0 , step=None, format=None, 
+                           help=r"""Select the value for the magnetic g-factor of the system.""",
+                           label_visibility="visible") # value of magnetic g-factor
 #%% Settign magnetic field
-r1_3 = row1[2].container()
-with r1_3:
-    st.write("## $B$-field")
+with row3[0].container():
+    st.write("### $B$-field")
     variable_b_toggle = st.toggle("Variable $B$", value=False, help="Toggle to study variable magnetic field.")
-    
-    if variable_b_toggle:
-        ### Pick magnetic field interval
+
+if variable_b_toggle:
+    ### Pick magnetic field interval
+    with row3[1].container(): 
         Bx_min, Bx_max = st.slider(r"$B_x$ range.", 0.0, 10.0, (0.0, 0.0),
                                    help ="Use this slider to select between which values to vary the x-component of the magnetic field." ) # obtaining range of values for Bx
-        
+    with row3[2].container(): 
         By_min, By_max = st.slider(r"$B_y$ range.", 0.0, 10.0, (0.0, 0.0),
                                    help ="Use this slider to select between which values to vary the y-component of the magnetic field." ) # obtaining range of values for By
-                               
+    with row3[3].container():                        
         Bz_min, Bz_max = st.slider(r"$B_z$ range.", 0.0, 10.0, (0.0, 1.0),
                                    help ="Use this slider to select between which values to vary the z-component of the magnetic field." ) # obtaining range of values for Bz
-        
+    with row3[4].container():
         points = st.number_input("nr. of of B-values.", 
                                min_value=2, max_value=None, 
                                value = 10, step=None, format=None, 
                                help= r"""Select the number of steps between $B_0$ and $B_f$""",
                                label_visibility="visible") # discretization number for B         
-        
-        kappa = st.number_input(r"$\kappa$", 
-                               min_value=0.0, max_value=None, 
-                               value = 1.0 , step=None, format=None, 
-                               help=r"""Select the value for the magnetic g-factor of the system.""",
-                               label_visibility="visible") # value of magnetic g-factor
-        Bx_vals = linspace(Bx_min, Bx_max, points)
-        By_vals = linspace(By_min, By_max, points)
-        Bz_vals = linspace(Bz_min, Bz_max, points)
-        zero = zeros(points)
-        
-        A = 0.5 * array([[zero,-Bz_vals,By_vals,zero],[Bz_vals,zero,-Bx_vals,zero],[-By_vals,Bx_vals,zero,zero]]) # general vector potential for B = (Bx, By, Bz)
-        A = transpose(A, axes = (2, 0, 1))
-        # st.write(f"{A.shape}")
-    else:
-        ### Pick discretization number in three dimensions
+
+    Bx_vals = linspace(Bx_min, Bx_max, points)
+    By_vals = linspace(By_min, By_max, points)
+    Bz_vals = linspace(Bz_min, Bz_max, points)
+    zero = zeros(points)
+    
+    A = 0.5 * array([[zero,-Bz_vals,By_vals,zero],[Bz_vals,zero,-Bx_vals,zero],[-By_vals,Bx_vals,zero,zero]]) # general vector potential for B = (Bx, By, Bz)
+    A = transpose(A, axes = (2, 0, 1))
+    # st.write(f"{A.shape}")
+else:
+    ### Pick discretization number in three dimensions
+    with row3[1].container(): 
         Bx = st.number_input(r"$B_x$", 
                                min_value=0.0, max_value=None, 
                                value = 0.0, step=None, format=None, 
                                help=r"""Select the value for the x-component of the magnetic field.""",
                                label_visibility="visible") # discretization number in x-direction
-        
+    with row3[2].container(): 
         By = st.number_input(r"$B_y$", 
                                min_value=0.0, max_value=None, 
                                value = 0.0 , step=None, format=None, 
                                help=r"""Select the value for the y-component of the magnetic field.""",
                                label_visibility="visible") # discretization number in y-direction
-        
+    with row3[3].container(): 
         Bz = st.number_input(r"$B_z$", 
                                min_value=0.0, max_value=None, 
                                value = 0.0 , step=None, format=None, 
                                help=r"""Select the value for the z-component of the magnetic field.""",
                                label_visibility="visible") # discretization number in z-direction
-        kappa = st.number_input(r"$\kappa$", 
-                               min_value=0.0, max_value=None, 
-                               value = 1.0 , step=None, format=None, 
-                               help=r"""Select the value for the magnetic g-factor of the system.""",
-                               label_visibility="visible") # value of magnetic g-factor.
-        A = 0.5 * array([[0,-Bz,By,0],[Bz,0,-Bx,0],[-By,Bx,0,0]]) # general vector potential for B ) (Bx, By, Bz)
+    A = 0.5 * array([[0,-Bz,By,0],[Bz,0,-Bx,0],[-By,Bx,0,0]]) # general vector potential for B ) (Bx, By, Bz)
 #%% Potential Plot container 
 
-r2_1 = row2[0].container()
-with r2_1:
-    st.write(r"## Confinement $V(x,y,z)$")
-    
+with row4[0].container():
     boundx_low = -1 # lower bound in x
     boundx_upp = 1 # upper bound in x
     
@@ -189,8 +195,7 @@ with r2_1:
     potential, u = get_potential_wire(X, Y, Z, 
                                       half_Lx, half_Ly, half_Lz, 
                                       infinity = 1e10) # obtaining potential profile
-r2_2 = row2[1].container()
-with r2_2:    
+with row4[1].container():    
     chart = st.empty()
     fig = go.Figure(data=go.Isosurface(
         x = X.flatten(),
@@ -204,54 +209,53 @@ with r2_2:
         showscale=False
         ))
     
-    chart.plotly_chart(fig, use_container_width=True)
+    chart.plotly_chart(fig, use_container_width=True, 
+                       config = {'displayModeBar': False})
 
 #%% Plotting eigenfunction for the obtained parameters
-r3 = row3[0].container()
-with r3:
-    button = st.button("Calculate", key=None, 
-                       help="Click when ready to execute calculations.",
-                       disabled=False, 
-                       use_container_width=True)
-    state_chart = st.empty() # initializing empty plot
-    energy_val = st.empty() # initializing energy value
-    mag_val = st.empty() # initializing magnetic field value
+
     
-    if variable_b_toggle:
-        if button:
-            eigenvalues = zeros((points, nr_of_soln)) # here we'll store the eigenvectors for all b-values
-            eigenvectors = zeros((points, nr_of_soln, dimx, dimy, dimz, 4), complex) # here we'll store the eigenvectors for all b-values
-            for i in stqdm(range(points), desc = r"Iterating through $B$-values"):
-                needed_terms = preparing_terms(boundx_low, boundx_upp, 
-                                               boundy_low, boundy_upp, 
-                                               boundz_low, boundz_upp,
-                                               dimx, dimy, dimz,
-                                               A = A[i],
-                                               coeff_x = 1, coeff_y = 1, coeff_z = 1,
-                                               bc = 0) # preliminary needed terms
-                
-                needed_terms["well-walls"]["half_Lx"] = half_Lx # updating needed_terms
-                needed_terms["well-walls"]["half_Ly"] = half_Ly # updating needed_terms
-                needed_terms["well-walls"]["half_Lz"] = half_Lz # updating needed_terms
-                
-                hamiltonian = h_tot(needed_terms, 
-                          g1 = g1, g2 = g2, g3 = g3,
-                          kappa = kappa, B = [Bx_vals[i],By_vals[i],Bz_vals[i]], infinity = 1e10,
-                          conf = "wire")[0]
-                eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
-                eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
-                tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
-                sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
-                eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
-                eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
-                eigenvalues[i] = eigvals # storing eigenvalues
-                eigenvectors[i] = eigvects.reshape((nr_of_soln, dimx, dimy, dimz, 4)) # storing eigenvectors
-                
-            st.session_state['eig-solns_variable_b'] = [eigenvalues, eigenvectors] # storing in session state
+
+    
+if variable_b_toggle:
+    if button:
+        eigenvalues = zeros((points, nr_of_soln)) # here we'll store the eigenvectors for all b-values
+        eigenvectors = zeros((points, nr_of_soln, dimx, dimy, dimz, 4), complex) # here we'll store the eigenvectors for all b-values
+        for i in stqdm(range(points), desc = r"Iterating through $B$-values"):
+            needed_terms = preparing_terms(boundx_low, boundx_upp, 
+                                           boundy_low, boundy_upp, 
+                                           boundz_low, boundz_upp,
+                                           dimx, dimy, dimz,
+                                           A = A[i],
+                                           coeff_x = 1, coeff_y = 1, coeff_z = 1,
+                                           bc = 0) # preliminary needed terms
             
+            needed_terms["well-walls"]["half_Lx"] = half_Lx # updating needed_terms
+            needed_terms["well-walls"]["half_Ly"] = half_Ly # updating needed_terms
+            needed_terms["well-walls"]["half_Lz"] = half_Lz # updating needed_terms
+            
+            hamiltonian = h_tot(needed_terms, 
+                      g1 = g1, g2 = g2, g3 = g3,
+                      kappa = kappa, B = [Bx_vals[i],By_vals[i],Bz_vals[i]], infinity = 1e10,
+                      conf = "wire")[0]
+            eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
+            eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+            tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+            sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+            eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+            eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
+            eigenvalues[i] = eigvals # storing eigenvalues
+            eigenvectors[i] = eigvects.reshape((nr_of_soln, dimx, dimy, dimz, 4)) # storing eigenvectors
+            
+        st.session_state['eig-solns_variable_b'] = [eigenvalues, eigenvectors] # storing in session state
+        
+    with row5[0].container():   
         if 'eig-solns_variable_b' in st.session_state: # if we calculated the solutions
             eigvals, eigvects = st.session_state['eig-solns_variable_b']
-        
+            
+            energy_val = st.empty() # initializing energy value
+            mag_val = st.empty() # initializing magnetic field value
+            
             bn = st.number_input("$B$-value", 
                                       min_value=0, max_value= int(points - 1), 
                                        value = 0 , step=None, format=None, 
@@ -280,37 +284,43 @@ with r3:
                 caps=dict(x_show=False, y_show=False)
                 ))
             
-            
-            state_chart.plotly_chart(fig_state, use_container_width=True)
             energy_val.write(f"E = {Round(eigvals[bn, n_level],2)}")
             mag_val.write(f"B = ({Round(Bx_vals[bn],2)},{Round(By_vals[bn],2)},{Round(Bz_vals[bn],2)}) ")
-    else: # if we havent toggled variable magnetic field
-        if button:
-            with st.spinner('Diagonalizing the problem'):
-                needed_terms = preparing_terms(boundx_low, boundx_upp, 
-                                               boundy_low, boundy_upp, 
-                                               boundz_low, boundz_upp,
-                                               dimx, dimy, dimz,
-                                               A = A,
-                                               coeff_x = 1, coeff_y = 1, coeff_z = 1,
-                                               bc = 0)
-                
-                needed_terms["well-walls"]["half_Lx"] = half_Lx # updating needed_terms
-                needed_terms["well-walls"]["half_Ly"] = half_Ly # updating needed_terms
-                needed_terms["well-walls"]["half_Lz"] = half_Lz # updating needed_terms
-                
-                hamiltonian = h_tot(needed_terms, 
-                          g1 = g1, g2 = g2, g3 = g3,
-                          kappa = kappa, B = [Bx,By,Bz], infinity = 1e10,
-                          conf = "wire")[0]
-                eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
-                eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
-                tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
-                sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
-                eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
-                eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
-                st.session_state['eig-solns'] = [eigvals, eigvects] # storing in session state
+    with row5[1].container():
+        state_chart = st.empty() # initializing empty plot
+        state_chart.plotly_chart(fig_state, use_container_width=True, 
+                                 config = {'displayModeBar': False})
+    with row6[0].container():    
+        st.line_chart(eigvals)            
             
+else: # if we havent toggled variable magnetic field
+    if button:
+        with st.spinner('Diagonalizing the problem'):
+            needed_terms = preparing_terms(boundx_low, boundx_upp, 
+                                           boundy_low, boundy_upp, 
+                                           boundz_low, boundz_upp,
+                                           dimx, dimy, dimz,
+                                           A = A,
+                                           coeff_x = 1, coeff_y = 1, coeff_z = 1,
+                                           bc = 0)
+            
+            needed_terms["well-walls"]["half_Lx"] = half_Lx # updating needed_terms
+            needed_terms["well-walls"]["half_Ly"] = half_Ly # updating needed_terms
+            needed_terms["well-walls"]["half_Lz"] = half_Lz # updating needed_terms
+            
+            hamiltonian = h_tot(needed_terms, 
+                      g1 = g1, g2 = g2, g3 = g3,
+                      kappa = kappa, B = [Bx,By,Bz], infinity = 1e10,
+                      conf = "wire")[0]
+            eigvals, eigvects = eigsh(hamiltonian, k = nr_of_soln, which = "SM") # for CPU
+            eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+            tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+            sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+            eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+            eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
+            st.session_state['eig-solns'] = [eigvals, eigvects] # storing in session state
+            
+    with row5[0].container():
         if 'eig-solns' in st.session_state: # if we calculated the solutions
             eigvals, eigvects = st.session_state['eig-solns']
             def get_v(n):
@@ -338,9 +348,12 @@ with r3:
                 caps=dict(x_show=False, y_show=False)
                 ))
             
-            state_chart.plotly_chart(fig_state, use_container_width=True)
-            energy_val.write(f"E = {Round(eigvals[n_level],2)}")
-
+        with row5[1].container():
+            state_chart = st.empty() # initializing empty plot
+            energy_val = st.empty() # initializing energy value
+            state_chart.plotly_chart(fig_state, use_container_width=True, 
+                                     config = {'displayModeBar': False})
+            energy_val.write(f"E = {Round(eigvals[n_level],2)}")            
 
         
     
