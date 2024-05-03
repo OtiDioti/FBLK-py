@@ -73,7 +73,7 @@ dim = nx_max * ny_max * nz_max # dimensionality of the system
 possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all possible states
 #%% Constructing Hamiltonian and diagonalizing (JIT)
 
-# @jit(nopython=True)
+@jit(nopython=True)
 def get_ks():
     kikj = [] # list to store kikj arrays (must be lsit for numba to work)
     k2 = [] # list to store k2 arrays (must be lsit for numba to work)
@@ -91,30 +91,8 @@ def get_ks():
 
 kikj, k2 = get_ks()
 
-start = time.time()
-H_v = h_tot_v(k2, kikj, dim)
-end = time.time()
-print(end - start)
+H = h_tot_v(k2, kikj, dim)
 
-start = time.time()
-H = [[[] for idx in range(dim)]for idx in range(dim)] # empty lists will be replaced by blocks of hamiltonian
-for nxket, nyket, nzket in possible_statess:
-    for nxbra, nybra, nzbra in possible_statess:
-        bra = array([nxbra, nybra, nzbra]) # defining bra state
-        ket = array([nxket, nyket, nzket]) # defining ket state
-        i = converter(ket, possible_statess) # obtaining block col index
-        j = converter(bra, possible_statess) # obtaining block row index
-        tmp = h_tot(k2[i,j][0], k2[i,j][1], k2[i,j][2],
-                    kikj[i,j][0], kikj[i,j][1], kikj[i,j][2], kikj[i,j][3], kikj[i,j][4], kikj[i,j][5], 
-                    g1 = g1, g2 = g2, g3 = g3,
-                    kappa = kappa, B = B) # calculating block hamiltonian <nx ny nz|H|mx my mz>
-        
-        H[i][j] = tmp # appending block
-
-
-H = block_array(H, format = "csr") # contructing hamiltonian from blocks
-end = time.time()
-print(end - start)
 #%% Obtaining Eigvals and Eigvects
 k = 10 # nr of solutions
 eigvals, eigvects = eigsh(H, k = k, which = "SM") # for CPU
