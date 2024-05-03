@@ -1,7 +1,10 @@
 import numpy as np
 import scipy.sparse as sparse
 #%% Spin-3/2 matrices
-J0 = np.eye(4)
+J0 = sparse.coo_matrix(np.array([[1, 0, 0, 0],
+                                 [0, 1, 0, 0],
+                                 [0, 0, 1, 0],
+                                 [0, 0, 0, 1]]))
 
 Jx = sparse.coo_matrix(0.5 * np.array([[0, 0, np.sqrt(3), 0],
                                        [0, 0, 0, np.sqrt(3)],
@@ -71,6 +74,29 @@ def anti_comm(a, b):
     """Returns anti commutator between two arrays.
     """
     return a @ b + b @ a
+#%% Useful functions for projection method
+def possible_states(nx_max, ny_max, nz_max):
+    """Returns all possible basis states in an ordered fashion.
+    ni_max is the highest state expanded into along direction i.
+    ground state is defined as n = 1"""
+ 
+    # obtaining all possible permutations of basis states
+    N = nx_max * ny_max * nz_max # all possible permutations of basis states
+    possible_vectors = np.zeros((N, 3)) # initializing empty array
+    idx = 0 # dummy index
+    for x in range(1, nx_max + 1):
+        for y in range(1, ny_max + 1):
+            for z in range(1, nz_max + 1):
+                possible_vectors[idx, :] = np.array([x, y, z])
+                idx += 1
+    return possible_vectors
+
+def converter(state, possible_states):
+    """Returns index of basis state |s, nx, ny, nz> -> |i>.
+    state is a tuple of the form (s, nx, ny, nz).
+    possible_states is an array generated via PossibleStates().
+    """
+    return np.where((possible_states == state).all(axis = 1))[0][0]
     
     
         

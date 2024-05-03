@@ -1,4 +1,4 @@
-"""In this file we explore the luttinger kohn hamiltonian
+"""In this file we explore the luttinger kohn hamiltonian using the finite element method.
 for the bulk as well as other confinement geometries.
 Note that we here consider hbar = me = e = 1.
 """
@@ -23,9 +23,9 @@ def preparing_terms(boundx_low, boundx_upp, boundy_low, boundy_upp, boundz_low, 
     dimx, dimy, dimz are discretization numbers along each direction.
     
     A is the vector potential to be used in minimal coup. substitution. This is of the form 
-                            A = (Ax_x * x + Ax_y * y + Ax_z * z + Ax_c, 
-                                 Ay_x * x + Ay_y * y + Ay_z * z + Ay_c, 
-                                 Az_x * x + Az_y * y + Az_z * z + Az_c) 
+                            A = [[Ax_x (* x), Ax_y (* y), Ax_z (* z), Ax_c], 
+                                 [Ay_x (* x), Ay_y (* y), Ay_z (* z), Ay_c], 
+                                 [Az_x (* x), Az_y (* y), Az_z (* z), Ax_c]]
     where x,y,z are the position operators, and Ai_j is the ith component of A multipling the j operator in that component.
     
     B is magnetic field vector.

@@ -79,7 +79,7 @@ def IsoSurface(A, X, Y, Z,
                iso_min = None, iso_max = None,
                iso_surf_n = 3,
                color_scale = 'RdBu_r', opacity = 0.6,
-               x_show_caps = False, y_show_caps = False,
+               x_show_caps = False, y_show_caps = False, z_show_caps = False,
                where_to_plot = "browser"):
     
     pio.renderers.default = where_to_plot
@@ -95,7 +95,7 @@ def IsoSurface(A, X, Y, Z,
         colorscale = color_scale,
         surface_count = iso_surf_n,
         colorbar_nticks = iso_surf_n,
-        caps=dict(x_show=x_show_caps, y_show=y_show_caps)
+        caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
         ))
     fig.show()
 
