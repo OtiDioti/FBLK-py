@@ -265,7 +265,7 @@ def psi_tot(X, Y, Z,
     psi_z = psi(Z, nz, Lz)
     psi_tot = psi_x * psi_y * psi_z  
     return psi_tot / norm(psi_tot)
-#%% defining vectorized hamiltonian terms
+#%% defining vectorized hamiltonian terms (roughly 6k times faster than functions above)
 def h_lk_v(kx2, ky2, kz2,
          kxky, kykx, kykz, kzky, kzkx, kxkz,
         g1 = 13.35, g2 = 4.25, g3 = 5.69):

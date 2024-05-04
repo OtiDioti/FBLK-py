@@ -7,31 +7,32 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory
 prev_dir = os.path.abspath(os.path.join(dir_path, os.pardir)) # parent of current directory
 sys.path.append(prev_dir+'/Modules') # appending modules folder
-from HamiltonianBulkProjection import h_tot, k_ik_j, k2_i, psi_tot, h_tot_v
-from UsefulFunctions import possible_states, converter
+from HamiltonianBulkProjection import  k_ik_j, k2_i, psi_tot, h_tot_v
+from UsefulFunctions import possible_states
 
 # plotting imports
 from PlottingUtils import IsoSurface
-import matplotlib.pyplot as plt
 
 # other imports
-from numpy import array, mgrid, diff, zeros, ndarray
+from numpy import array, mgrid, diff, zeros
 from numpy.linalg import norm
 from scipy.sparse.linalg import eigsh
-from scipy.sparse import block_array
 from tqdm import trange
 from numpy import sum as Sum
 from numpy import abs as Abs
 from numba import jit
-import time
 #%% Constants
 g1 = 13.35 # Ge Luttinger parameter gamma_1
 g2 = 4.25 # Ge Luttinger parameter gamma_2
 g3 = 5.69 # Ge Luttinger parameter gamma_3
 
-B = [0, 0, 0] # magnetic field vector
+gs = 4.84 # spherical approx
+gk = g1 + 2.5 * gs # spherical approx
+
+bz = 0
+B = [0, 0, bz] # magnetic field vector
 A = array([[0,0,0,0],
-           [0,0,0,0],
+           [0.5 * bz,0,0,0],
            [0,0,0,0]]) # magnetic vector potential
 
 kappa = 1 # magnetic g-factor
@@ -49,9 +50,9 @@ Lx = 2 # well between boundx_low < x < boundx_upp
 Ly = 2 # well between boundy_low < y < boundy_upp
 Lz = 2 # well between boundz_low < z < boundz_upp
 
-dimx = 100 # discretization nr in x
+dimx = 50 # discretization nr in x
 dimy = 50 # discretization nr in y
-dimz = 100 # discretization nr in z
+dimz = 50 # discretization nr in z
 
 X, Y, Z = mgrid[boundx_low : boundx_upp : dimx*1j, 
                 boundy_low : boundy_upp : dimy*1j,
@@ -62,9 +63,9 @@ dy = diff(Y[0,:,0])[0]
 dz = diff(Z[0,0,:])[0]
 
 #%% Number of states
-nx_max = 5 # highest state projected on x
-ny_max = 5 # highest state projected on y
-nz_max = 5 # highest state projected on z
+nx_max = 20 # highest state projected on x
+ny_max = 20 # highest state projected on y
+nz_max = 20 # highest state projected on z
 Nx = nx_max + 1 # needed for the loops
 Ny = ny_max + 1 # needed for the loops
 Nz = nz_max + 1 # needed for the loops
@@ -75,6 +76,8 @@ possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all 
 
 @jit(nopython=True)
 def get_ks():
+    """Returns tuple of 2 ndarrays for the expectation values of k^2 and kikj opertators.
+    """
     kikj = [] # list to store kikj arrays (must be lsit for numba to work)
     k2 = [] # list to store k2 arrays (must be lsit for numba to work)
     idx = 0 # dummy index
@@ -91,7 +94,7 @@ def get_ks():
 
 kikj, k2 = get_ks()
 
-H = h_tot_v(k2, kikj, dim)
+H = h_tot_v(k2, kikj, dim, g1 = g1, g2 = g2, g3 = g3)
 
 #%% Obtaining Eigvals and Eigvects
 k = 10 # nr of solutions
@@ -109,17 +112,23 @@ for i in trange(k, desc="Tracing out spin-components"): # iterating through eige
     tmp = eigvects[i] # current eigenvector
     for j in range(dim): # iterating through basis states
         spin_component[i, j, :] = eigvects[i][j*4:j*4 + 4] # for each basis state we append the spin components (eg: the first 4 element of tmp correspond to |1,1,1,3/2>, |1,1,1,-3/2>, |1,1,1,1/2>, |1,1,1,-1/2>)
-    coeff =  Sum(Abs(spin_component[i])**2, axis = 1)
+    coeff =  Sum(spin_component[i], axis = 1)
     traced_out_psi[i] = coeff / norm(coeff)
 
 #%% plotting eigenfunctions
 def eigfn(X, Y, Z,
-          expanded_state,
+          basis_states_coeff,
           Lx, Ly, Lz):
+    """Returns 3d plottable eigenfunction: this being the weighted sum of the 
+    basis states in possible_statess.
+    X,Y,Z are space meshgrid.
+    basis_states_coeff are complex coefficients for the basis states in possible_statess.
+    L_i are the well-depths in the three dimensions.
+    """
     eign_fn = 0 # initializing eigenfunction
     for n, state in enumerate(possible_statess):
         nx, ny, nz = state
-        eign_fn += expanded_state[n] * psi_tot(X, Y, Z, 
+        eign_fn += basis_states_coeff[n] * psi_tot(X, Y, Z, 
                                                nx, ny, nz, 
                                                Lx, Ly, Lz)
     eign_fn = eign_fn / norm(eign_fn)
