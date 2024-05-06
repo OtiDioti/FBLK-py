@@ -14,9 +14,7 @@ from scipy.sparse import kron, eye
 from numpy import pi, sin, sqrt, where, array
 from numpy import sum as Sum
 from numpy.linalg import norm
-from numba import jit
 #%% defining momentum and position operators for infinite well orbital states
-@jit(nopython=True)
 def i_k_i(bra, ket, soft = 1e-15):
     """Returns the expecation values <n_i|i ki|m_i> and <n_i|ki i|m_i>.
     """
@@ -34,7 +32,6 @@ def i_k_i(bra, ket, soft = 1e-15):
     kzz = kii(nz_bra, nz_ket) # <n_z|kz z|m_z>
     return xkx, kxx, yky, kyy, zkz, kzz
 
-@jit(nopython=True)
 def k_ik_j(bra, ket,
            A,
            Lx, Ly, Lz,
@@ -122,7 +119,6 @@ def k_ik_j(bra, ket,
                
     return kxky, kykx, kykz, kzky, kzkx, kxkz
 
-@jit(nopython=True)
 def k2_i(bra, ket,
          A,
          Lx, Ly, Lz,
@@ -316,3 +312,47 @@ def h_tot_v(k2, kikj,
     lk = h_lk_v(kx2, ky2, kz2, kxky, kykx, kykz, kzky, kzkx, kxkz, g1, g2, g3) # lk hamiltonian
     z = h_z_v(dim, kappa, B)
     return - lk + z
+#%%
+def get_ks(possible_statess, 
+           A, 
+           Lx, Ly, Lz,
+           dim):
+    """Returns tuple of 2 ndarrays for the expectation values of k^2 and kikj opertators.
+    (Used in Projection method).
+    possible_statess is array of all possible permutations of basis states.
+    A is magnetic vector potential.
+    L_i is well depth in the three directions.
+    dim is orbital dimension of the problem.
+    """
+    kikj = [] # list to store kikj arrays (must be lsit for numba to work)
+    k2 = [] # list to store k2 arrays (must be lsit for numba to work)
+    idx = 0 # dummy index
+    for nxket, nyket, nzket in possible_statess:
+        for nxbra, nybra, nzbra in possible_statess:
+            bra = array([nxbra, nybra, nzbra]) # defining bra state
+            ket = array([nxket, nyket, nzket]) # defining ket state
+            kikj.append([*k_ik_j(bra, ket, A, Lx, Ly, Lz)]) # obtaining k_ik_j expectation values 
+            k2.append([*k2_i(bra, ket, A, Lx, Ly, Lz)]) # obtaining k_i^2 expectation values
+            idx += 1
+    kikj = array(kikj).reshape(dim, dim, 6)
+    k2 = array(k2).reshape(dim, dim, 3)
+    return kikj, k2
+
+def eigfn(X, Y, Z,
+          basis_states_coeff, possible_statess,
+          Lx, Ly, Lz):
+    """Returns 3d plottable eigenfunction: this being the weighted sum of the 
+    basis states in possible_statess. (Used in Projection method)
+    X,Y,Z are space meshgrid.
+    basis_states_coeff are complex coefficients for the basis states in possible_statess.
+    possible_statess is array of all possible permutations of basis states.
+    L_i are the well-depths in the three dimensions.
+    """
+    eign_fn = 0 # initializing eigenfunction
+    for n, state in enumerate(possible_statess):
+        nx, ny, nz = state
+        eign_fn += basis_states_coeff[n] * psi_tot(X, Y, Z, 
+                                               nx, ny, nz, 
+                                               Lx, Ly, Lz)
+    eign_fn = eign_fn / norm(eign_fn)
+    return eign_fn

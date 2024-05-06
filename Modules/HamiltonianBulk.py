@@ -218,7 +218,7 @@ def get_potential_wire(X, Y, Z,
                        infinity = 1e10): 
     """Returns tuple with infinite well potential in z, x, y in diagonal form (to be used for calcs) and in plottable format.
     X, Y, Z are the position grids in the three directions.
-    half_Lx, half_Ly, half_Lz, is half length of the well in z centered at the origin.
+    Lx, Ly, Lz, length of the well in z centered at the origin.
     infinity is the height of the well.
     """
     

@@ -66,9 +66,6 @@ dz = diff(Z[0,0,:])[0]
 nx_max = 20 # highest state projected on x
 ny_max = 20 # highest state projected on y
 nz_max = 20 # highest state projected on z
-Nx = nx_max + 1 # needed for the loops
-Ny = ny_max + 1 # needed for the loops
-Nz = nz_max + 1 # needed for the loops
 dim = nx_max * ny_max * nz_max # dimensionality of the system
 #%% obtaining indices
 possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all possible states
