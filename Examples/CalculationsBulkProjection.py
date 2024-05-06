@@ -20,7 +20,6 @@ from scipy.sparse.linalg import eigsh
 from tqdm import trange
 from numpy import sum as Sum
 from numpy import abs as Abs
-from numba import jit
 #%% Constants
 g1 = 13.35 # Ge Luttinger parameter gamma_1
 g2 = 4.25 # Ge Luttinger parameter gamma_2
@@ -34,6 +33,7 @@ B = [0, 0, bz] # magnetic field vector
 A = array([[0,0,0,0],
            [0.5 * bz,0,0,0],
            [0,0,0,0]]) # magnetic vector potential
+
 
 kappa = 1 # magnetic g-factor
 
@@ -63,15 +63,14 @@ dy = diff(Y[0,:,0])[0]
 dz = diff(Z[0,0,:])[0]
 
 #%% Number of states
-nx_max = 20 # highest state projected on x
-ny_max = 20 # highest state projected on y
-nz_max = 20 # highest state projected on z
+nx_max = 2 # highest state projected on x
+ny_max = 2 # highest state projected on y
+nz_max = 2 # highest state projected on z
 dim = nx_max * ny_max * nz_max # dimensionality of the system
 #%% obtaining indices
 possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all possible states
 #%% Constructing Hamiltonian and diagonalizing (JIT)
 
-@jit(nopython=True)
 def get_ks():
     """Returns tuple of 2 ndarrays for the expectation values of k^2 and kikj opertators.
     """

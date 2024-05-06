@@ -36,9 +36,9 @@ st.title("Four band Luttinger Kohn Hamiltonian")
 st.divider()
 #%% setting page layout
 error_box = st.empty()
-row1 = st.columns(8) # problem settings
-row2 = st.columns(8) # paramters picker
-row3 = st.columns(8) # magnetic field settings
+row1 = st.columns(7) # problem settings
+row2 = st.columns(7) # paramters picker
+row3 = st.columns(7) # magnetic field settings
 st.divider()
 st.write(r"## Confinement $V(x,y,z)$")
 row4 = st.columns(2) # potential plotter
@@ -84,24 +84,19 @@ if method == "Projection":
                                value = 10, step=None, format=None, 
                                help="""Select the number of orbital basis states to project to in z.""",
                                label_visibility="visible") # highest state projected on x
-    with row1[4].container():
-        nr_of_soln = st.number_input("\# of solutions", 
-                               min_value=1, max_value=None, 
-                               value = 3 , step=None, format=None, 
-                               help="""Select the number of solutions with lowest eigen energy to solve for.""",
-                               label_visibility="visible") # discretization number in z-direction
+    
     dim = nx_max * ny_max * nz_max # orbital dimensionality of the system
     possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all possible states
 
         
     if time_dependence_toggle and not(variable_b_toggle): # if time dependence is included and no variable b
-        with row1[5].container():
+        with row1[4].container():
             points_t = st.number_input("\# of t-steps.", 
                                        min_value=10, max_value=None, 
                                        value = 10, step=None, format=None, 
                                        help="""Select the number of steps to discretize time""",
                                        label_visibility="visible") # discretization number in z-direction
-        with row1[6].container():
+        with row1[5].container():
             tmax = st.number_input(r"$t_f$", 
                                    min_value=1, max_value=None, 
                                    value = 1, step=None, format=None, 
@@ -109,6 +104,13 @@ if method == "Projection":
                                    label_visibility="visible") # discretization number in z-direction
         tvals = linspace(0, tmax, points_t) # range of time values
         dt = diff(tvals)[0] # discretization number for time 
+    elif not(time_dependence_toggle):
+        with row1[4].container():
+            nr_of_soln = st.number_input("\# of solutions", 
+                                   min_value=1, max_value=None, 
+                                   value = 3 , step=None, format=None, 
+                                   help="""Select the number of solutions with lowest eigen energy to solve for.""",
+                                   label_visibility="visible") # discretization number in z-direction
 #%% if FEM is Chosen
 elif method == "FEM":
     error_box.error("""This implementation for the FEM method is not complete and
@@ -141,28 +143,30 @@ elif method == "FEM":
                                help="""Select the number of steps to discretize z dimension
                                between z = -1 and z = 1""",
                                label_visibility="visible") # discretization number in z-direction
-    with row1[4].container():
-        nr_of_soln = st.number_input("\# of solutions", 
-                               min_value=1, max_value=None, 
-                               value = 3 , step=None, format=None, 
-                               help="""Select the number of solutions with lowest eigen energy to solve for.""",
-                               label_visibility="visible") # discretization number in z-direction
         
     if time_dependence_toggle and not(variable_b_toggle): # if time dependence is included and no variable b
-        with row1[5].container():
+        with row1[4].container():
             points_t = st.number_input("\# of t-steps.", 
                                        min_value=10, max_value=None, 
                                        value = 10, step=None, format=None, 
                                        help="""Select the number of steps to discretize time""",
                                        label_visibility="visible") # discretization number in z-direction
-        with row1[6].container():
+        with row1[5].container():
             tmax = st.number_input(r"$t_f$", 
                                    min_value=1, max_value=None, 
                                    value = 1, step=None, format=None, 
                                    help="""Select the final value of time""",
                                    label_visibility="visible") # discretization number in z-direction
         tvals = linspace(0, tmax, points_t) # range of time values
-        dt = diff(tvals)[0] # discretization number for time         
+        dt = diff(tvals)[0] # discretization number for time    
+        
+    elif not(time_dependence_toggle):
+        with row1[4].container():
+            nr_of_soln = st.number_input("\# of solutions", 
+                                   min_value=1, max_value=None, 
+                                   value = 3 , step=None, format=None, 
+                                   help="""Select the number of solutions with lowest eigen energy to solve for.""",
+                                   label_visibility="visible") # discretization number in z-direction
 #%% Selecting  parameters
 with row2[0].container():
     st.write("#### Parameters")
@@ -222,9 +226,8 @@ if variable_b_toggle:
     Bz_vals = linspace(Bz_min, Bz_max, points_b)
     zero = zeros(points_b)
     
-    A = 0.5 * array([[zero,-Bz_vals,By_vals,zero],[Bz_vals,zero,-Bx_vals,zero],[-By_vals,Bx_vals,zero,zero]]) # general vector potential for B = (Bx, By, Bz)
-    A = transpose(A, axes = (2, 0, 1))
-    # st.write(f"{A.shape}")
+    Ac = 0.5 * array([[zero,-Bz_vals,By_vals,zero],[Bz_vals,zero,-Bx_vals,zero],[-By_vals,Bx_vals,zero,zero]]) # general vector potential for B = (Bx, By, Bz)
+    Ac = transpose(Ac, axes = (2, 0, 1))[:,:,:,None,None]
 else: # if variable_b_toggle is False
     if time_dependence_toggle: # if time dependence is True
         zero = zeros(points_t)
@@ -261,30 +264,32 @@ else: # if variable_b_toggle is False
                                 help=r"""Select the value for the frequency of the oscillating field.""",
                                 label_visibility="visible") # discretization number in z-direction
         
-        A = 0.5 * array([[zero,-Bz,By,zero],[Bz,zero,-Bx,zero],[-By,Bx,zero, E0/w * cos(w * tvals)]]) # general vector potential for B ) (Bx, By, Bz)
-        A = transpose(A, axes = (2, 0, 1))
+        Ac = 0.5 * array([[zero,-Bz,By,zero],[Bz,zero,-Bx,zero],[-By,Bx,zero, E0/w * cos(w * tvals)]]) # general vector potential for B ) (Bx, By, Bz)
+        Ac = transpose(Ac, axes = (2, 0, 1))[:,:,:,None,None]
     else: # if time_dependence_toggle is False
+        zero = zeros(1)
+        ones = ones(1)
         ### Pick magnetic field values
         with row3[1].container(): 
             Bx = st.number_input(r"$B_x$", 
                                    min_value=0.0, max_value=None, 
                                    value = 0.0, step=None, format=None, 
                                    help=r"""Select the value for the x-component of the magnetic field.""",
-                                   label_visibility="visible") # discretization number in x-direction
+                                   label_visibility="visible") * ones# discretization number in x-direction
         with row3[2].container(): 
             By = st.number_input(r"$B_y$", 
                                    min_value=0.0, max_value=None, 
                                    value = 0.0 , step=None, format=None, 
                                    help=r"""Select the value for the y-component of the magnetic field.""",
-                                   label_visibility="visible") # discretization number in y-direction
+                                   label_visibility="visible") * ones # discretization number in y-direction
         with row3[3].container(): 
             Bz = st.number_input(r"$B_z$", 
                                    min_value=0.0, max_value=None, 
                                    value = 0.0 , step=None, format=None, 
                                    help=r"""Select the value for the z-component of the magnetic field.""",
-                                   label_visibility="visible") # discretization number in z-direction
-            A = 0.5 * array([[0,-Bz,By,0],[Bz,0,-Bx,0],[-By,Bx,0,0]]) # general vector potential for B ) (Bx, By, Bz)
-
+                                   label_visibility="visible") * ones # discretization number in z-direction
+            Ac = 0.5 * array([[zero,-Bz,By,zero],[Bz,zero,-Bx,zero],[-By,Bx,zero,zero]]) # general vector potential for B ) (Bx, By, Bz)
+            Ac = transpose(Ac, axes = (2, 0, 1))[:,:,:,None,None]
 #%% Potential Plot container 
 with row4[0].container():
     boundx_low = -1 # lower bound in x
@@ -352,7 +357,7 @@ if method == "Projection":
         if calculate_button:
             if 'eig-solns_variable_b' in st.session_state: # if we had previously made a run for variable b
                 del st.session_state['eig-solns_variable_b'] # emtpies previous run of varying magnetic field
-            st.session_state["eig-solns_variable_b"] = projection_solver_var_b(A, 
+            st.session_state["eig-solns_variable_b"] = projection_solver_var_b(Ac, 
                                                                                Lx, Ly, Lz,
                                                                                g1, g2, g3,
                                                                                kappa, Bx_vals, By_vals, Bz_vals, 
@@ -429,28 +434,23 @@ if method == "Projection":
             if calculate_button:
                 if 'eig-solns_t' in st.session_state: # if we had previously made a run for variable b
                     del st.session_state['eig-solns_t'] # emtpies previous run of varying magnetic field
-                st.session_state['eig-solns_t'] = projection_solver_var_t(A, 
+                st.session_state['eig-solns_t'] = projection_solver_var_t(Ac, 
                                                                           Lx, Ly, Lz,
                                                                           g1, g2, g3,
                                                                           kappa, Bx, By, Bz, 
-                                                                          points_t, nr_of_soln, dim, possible_statess)
+                                                                          points_t, dim, dt, possible_statess)
                 
             # Plotting solutions
             with row5[0].container():   
                 if 'eig-solns_t' in st.session_state: # if we calculated the solutions
                     eigvals, eigvects_orbi, eigvects_spin = st.session_state['eig-solns_t']
-                    energy_val = st.empty() # initializing energy value
                     
                     tn = st.number_input("$t$-value", 
                                          min_value=0, max_value= int(points_t - 1), 
                                          value = 0 , step=None, format=None, 
                                          help="""Select for which moment in time to plot.""",
                                          label_visibility="visible") # magnetic field index
-                    n_level = st.number_input("Energy level", 
-                                              min_value=0, max_value= int(nr_of_soln - 1), 
-                                              value = 0 , step=None, format=None, 
-                                              help="""Select the energy level to display.""",
-                                              label_visibility="visible") # energy level index
+
                     dimx = st.number_input(r"dim$_x$", 
                                          min_value=1, max_value=None, 
                                          value = 30 , step=None, format=None, 
@@ -472,7 +472,7 @@ if method == "Projection":
                                     boundz_low : boundz_upp : dimz*1j] # meshgrid
                     
                     p_dist = Abs(eigfn(X, Y, Z,
-                                       eigvects_orbi[tn, n_level], possible_statess,
+                                       eigvects_orbi[tn], possible_statess,
                                        Lx, Ly, Lz))**2
         
                     fig_state = go.Figure(data=go.Isosurface(
@@ -488,9 +488,7 @@ if method == "Projection":
                         colorbar_nticks = 6,
                         caps=dict(x_show=False, y_show=False, z_show=False)
                         ))
-                    
-                    energy_val.write(f"E = {Round(eigvals[tn, n_level],2)}")
-                    
+                                        
             # Plotting 
             if 'eig-solns_t' in st.session_state: # if we calculated the solutions
                 with row5[1].container():
@@ -505,7 +503,7 @@ if method == "Projection":
             if calculate_button:
                 if 'eig-solns' in st.session_state: # if we had previously made a run for static solutions
                     del st.session_state['eig-solns'] # emtpies previous run for static solutions
-                st.session_state['eig-solns'] = projection_solver_static(A, 
+                st.session_state['eig-solns'] = projection_solver_static(Ac, 
                                                                          Lx, Ly, Lz,
                                                                          g1, g2, g3,
                                                                          kappa, Bx, By, Bz, 

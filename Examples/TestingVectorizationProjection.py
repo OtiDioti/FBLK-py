@@ -7,14 +7,20 @@ import sys
 import os
 current_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_path)
-from UsefulFunctions import J0, Jx, Jy, Jz, anti_comm
+prev_dir = os.path.abspath(os.path.join(current_path, os.pardir)) # parent of current directory
+sys.path.append(prev_dir+'/Modules') # appending modules folder
+from UsefulFunctions import J0, Jx, Jy, Jz, anti_comm, possible_states
+from GetInputProjection_Vectorized import get_input
+from HamiltonianBulkProjection import psi_tot
+from PlottingUtils import IsoSurface
 
 # other imports
 from scipy.sparse import kron, eye
-from numpy import pi, sin, sqrt, where, array
+from scipy.sparse.linalg import eigsh
+from numpy import pi, array, ones, zeros, diff, mgrid, transpose
 from numpy import sum as Sum
 from numpy.linalg import norm
-#%% defining momentum and position operators for infinite well orbital states
+#%%
 def k_ik_j(inputt,
            soft = 1e-15):
     """Returns list of expectation value <bra| k_ik_j = hbar^2 p_ip_j |ket> for infinite well (xc=0 and n = 1,2,3,...)
@@ -168,15 +174,106 @@ def h_tot_v(kx2, ky2, kz2,
     lk = h_lk_v(kx2, ky2, kz2, kxky, kykx, kykz, kzky, kzkx, kxkz, g1, g2, g3) # lk hamiltonian
     z = h_z_v(dim, kappa, B)
     return - lk + z
-#%%
+#%% Constants
+g1 = 13.35 # Ge Luttinger parameter gamma_1
+g2 = 4.25 # Ge Luttinger parameter gamma_2
+g3 = 5.69 # Ge Luttinger parameter gamma_3
+
+gs = 4.84 # spherical approx
+gk = g1 + 2.5 * gs # spherical approx
+
+points = 10
+zero = zeros(points)
+one = ones(points)
+bz = 0 * one
+B = array([zero, zero, bz]).T # magnetic field vector
+
+Ac = array([[zero,zero,zero,zero],
+            [0.5 * bz,zero,zero,zero],
+            [zero,zero,zero,zero]]) # magnetic vector potential coefficients
+Ac = transpose(Ac, axes = (2,0,1))[:,:,:,None,None]
+
+
+kappa = 1 # magnetic g-factor
+
+boundx_low = -1 # lower bound in x
+boundx_upp = 1 # upper bound in x
+
+boundy_low = -1 # lower bound in y
+boundy_upp = 1 # upper bound in y
+
+boundz_low = -1 # lower bound in z
+boundz_upp = 1 # upper bound in z
+
+Lx = 2 # well between boundx_low < x < boundx_upp
+Ly = 2 # well between boundy_low < y < boundy_upp
+Lz = 2 # well between boundz_low < z < boundz_upp
+
+dimx = 50 # discretization nr in x
+dimy = 50 # discretization nr in y
+dimz = 50 # discretization nr in z
+
+X, Y, Z = mgrid[boundx_low : boundx_upp : dimx*1j, 
+                boundy_low : boundy_upp : dimy*1j,
+                boundz_low : boundz_upp : dimz*1j] # meshgrid
+
+dx = diff(X[:,0,0])[0]
+dy = diff(Y[0,:,0])[0]
+dz = diff(Z[0,0,:])[0]
+
+#%% Number of states
+nx_max = 2 # highest state projected on x
+ny_max = 2 # highest state projected on y
+nz_max = 2 # highest state projected on z
+dim = nx_max * ny_max * nz_max # dimensionality of the system
+#%% obtaining indices
+possible_statess = possible_states(nx_max, ny_max, nz_max) # permutation of all possible states
+inputt = get_input(possible_statess, Ac, Lx, Ly, Lz, dim)
+#%% Constructing Hamiltonian and diagonalizing (JIT)
+
+def get_ks():
+    """Returns tuple of 2 ndarrays for the expectation values of k^2 and kikj opertators.
+    """
+    kikj = k_ik_j(inputt) # obtaining k_ik_j expectation values 
+    k2 = k2_i(inputt) # obtaining k_i^2 expectation values
+    return kikj, k2
+
+kikj, k2 = get_ks()
+
+H = [] # empty list of hamiltonians
+for i in range(points):
+    H.append(h_tot_v(k2[0][i], k2[1][i], k2[2][i], 
+                   kikj[0][i], kikj[1][i], kikj[2][i], kikj[3][i], kikj[4][i], kikj[5][i],
+                   dim,
+                   g1 = 13.35, g2 = 4.25, g3 = 5.69,
+                   kappa = kappa, B = B[i]))
+#%% Obtaining Eigvals and Eigvects
+k = 10 # nr of solutions
+eigvals, eigvects = eigsh(H[0], k = k, which = "SM") # for CPU
+eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
+#%% tracing out spin components to obtain plottable eigenvectors
+spin_component = zeros((k, dim, 4), complex) # here we will store the eigenvectors spin components
+traced_out_psi = zeros((k, dim), complex) # here we will store eigenvectors with spin component traced out
+
+for i in range(k): # iterating through eigenvectors
+    tmp = eigvects[i] # current eigenvector
+    for j in range(dim): # iterating through basis states
+        spin_component[i, j, :] = eigvects[i][j*4:j*4 + 4] # for each basis state we append the spin components (eg: the first 4 element of tmp correspond to |1,1,1,3/2>, |1,1,1,-3/2>, |1,1,1,1/2>, |1,1,1,-1/2>)
+    coeff =  Sum(spin_component[i], axis = 1)
+    traced_out_psi[i] = coeff / norm(coeff)
+
+#%% plotting eigenfunctions
 def eigfn(X, Y, Z,
-          basis_states_coeff, possible_statess,
+          basis_states_coeff,
           Lx, Ly, Lz):
     """Returns 3d plottable eigenfunction: this being the weighted sum of the 
-    basis states in possible_statess. (Used in Projection method)
+    basis states in possible_statess.
     X,Y,Z are space meshgrid.
     basis_states_coeff are complex coefficients for the basis states in possible_statess.
-    possible_statess is array of all possible permutations of basis states.
     L_i are the well-depths in the three dimensions.
     """
     eign_fn = 0 # initializing eigenfunction
@@ -187,36 +284,13 @@ def eigfn(X, Y, Z,
                                                Lx, Ly, Lz)
     eign_fn = eign_fn / norm(eign_fn)
     return eign_fn
+        
+n = 0
+p_dist = abs(eigfn(X, Y, Z,
+                   traced_out_psi[n],
+                   Lx, Ly, Lz))**2
 
-def get_ks(inputt):
-    """Returns tuple of 2 ndarrays for the expectation values of k^2 and kikj opertators.
-    """
-    kikj = k_ik_j(inputt) # obtaining k_ik_j expectation values 
-    k2 = k2_i(inputt) # obtaining k_i^2 expectation values
-    return kikj, k2
-
-#%% eigenfunctions for infinite well (xc = 0 and n = 1,2,3,...)
-
-def psi(x, n, L):
-    """Returns eigenfunction of particle in infinite well (xc = 0 and n = 1,2,3,...).
-    x is position.
-    n is energy level.
-    L is width of infinite well (xc = 0 and n = 1,2,3,...)."""
-    half_L = L / 2 # getting half the well depth
-    psi = sqrt(2 / L) * sin(n * pi / L * (x + L / 2)) # wavefunction 
-    psi[where(x <= -half_L)] = 0 # setting values outside well to be 0
-    psi[where(x >= half_L)] = 0 # setting values outside well to be 0
-    return psi
-
-def psi_tot(X, Y, Z, 
-            nx, ny, nz,
-            Lx, Ly, Lz):
-    """Returns plottable total wavefunction.
-    X,Y,Z are space meshgrids.
-    nx,ny,nz are orbital quantum numbers for the three dimensions.
-    Lx, Ly, Lz are well depths."""
-    psi_x = psi(X, nx, Lx)
-    psi_y = psi(Y, ny, Ly)
-    psi_z = psi(Z, nz, Lz)
-    psi_tot = psi_x * psi_y * psi_z  
-    return psi_tot / norm(psi_tot)
+IsoSurface(p_dist, X, Y, Z,
+            iso_min = None, iso_max = None,
+            iso_surf_n = 10,
+            color_scale = 'RdBu_r', opacity = 0.6)
