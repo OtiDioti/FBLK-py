@@ -12,6 +12,8 @@ Thus, a detailed description of the electronic structure in materials with compl
 ## Features
 ![Alt text](/Images/ground_state_planar_geometry.png)
 
+* **Projection Method Solver**: To deal with the FBLK Hamiltonian, the repository includes a a "projection" method, where the full Hamiltonian is projected onto a set of basis states for the "particle in a box" problem. Given a high enough number of basis states, this method provides a fast and reliable method to solve the problem.
+
 * **Finite Element Method Solver**: The repository includes an implementation of the finite element method (FEM) to solve the four bands Luttinger Kohn Hamiltonian numerically. FEM is a powerful technique for solving partial differential equations, making it well-suited for accurately capturing the behavior of electrons/holes in materials described by the Hamiltonian.
 
 * **Customizable Parameters**: Users can easily customize parameters such as Luttinger parametes, external potentials, boundary conditions and external fields to study different scenarios and explore the effects of various factors on the electronic structure. The coupling to external electrict and magnetic fields is handled via a semi-classical approach through a minimal coupling substitution method. 
