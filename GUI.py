@@ -4,7 +4,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__)) # current directory
 sys.path.append(dir_path+'/Modules') # appending modules folder
 from HamiltonianBulk import get_potential_wire, preparing_terms, h_tot
-from HamiltonianBulkProjection import eigfn, h_tot_v, get_ks
+from HamiltonianBulkProjection import eigfn
 from UsefulFunctions import possible_states
 from StreamlitSolvers import projection_solver_static, projection_solver_var_b, projection_solver_var_t
 
@@ -581,7 +581,7 @@ elif method == "FEM":
                                                boundy_low, boundy_upp, 
                                                boundz_low, boundz_upp,
                                                dimx, dimy, dimz,
-                                               A = A[i],
+                                               A = Ac[i],
                                                coeff_x = 1, coeff_y = 1, coeff_z = 1,
                                                bc = 0) # preliminary needed terms
                 
@@ -659,7 +659,7 @@ elif method == "FEM":
                                                    boundy_low, boundy_upp, 
                                                    boundz_low, boundz_upp,
                                                    dimx, dimy, dimz,
-                                                   A = A[0],
+                                                   A = Ac[0],
                                                    coeff_x = 1, coeff_y = 1, coeff_z = 1,
                                                    bc = 0)
                     
@@ -687,7 +687,7 @@ elif method == "FEM":
                                                    boundy_low, boundy_upp, 
                                                    boundz_low, boundz_upp,
                                                    dimx, dimy, dimz,
-                                                   A = A[n],
+                                                   A = Ac[n],
                                                    coeff_x = 1, coeff_y = 1, coeff_z = 1,
                                                    bc = 0) # obtaining needed arrays (THIS CAN BE OPTIMIZED)
                     
@@ -745,7 +745,7 @@ elif method == "FEM":
                                                    boundy_low, boundy_upp, 
                                                    boundz_low, boundz_upp,
                                                    dimx, dimy, dimz,
-                                                   A = A,
+                                                   A = Ac,
                                                    coeff_x = 1, coeff_y = 1, coeff_z = 1,
                                                    bc = 0)
                     

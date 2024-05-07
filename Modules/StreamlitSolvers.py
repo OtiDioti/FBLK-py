@@ -45,10 +45,11 @@ def projection_solver_static(Ac,
     dim is orbital dimensionality of the problem.
     possible_statess is array with all permutations of basis states.
     """
-    with spinner('Diagonalizing the problem'):
-        # Constructing Hamiltonian
+    with spinner("Computing expectation values"):
         inputt = get_input(possible_statess, Ac, Lx, Ly, Lz, dim)
         kikj, k2 = get_ks(inputt)
+    with spinner('Diagonalizing the problem'):
+        # Constructing Hamiltonian
         t = 0 # "dummy time" index
         H = h_tot_v(k2[0][t], k2[1][t], k2[2][t], 
                     kikj[0][t], kikj[1][t], kikj[2][t], kikj[3][t], kikj[4][t], kikj[5][t],
