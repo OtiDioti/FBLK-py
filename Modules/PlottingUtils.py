@@ -98,7 +98,58 @@ def IsoSurface(A, X, Y, Z,
         caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
         ))
     fig.show()
+    
 
+def plotly_animate_3d(A, X, Y, Z,
+                      iso_min = None, iso_max = None,
+                      iso_surf_n = 10,
+                      color_scale = 'RdBu_r', opacity = 0.6,
+                      x_show_caps = False, y_show_caps = False, z_show_caps = False,
+                      title = None):
+    """Returns fig object that can be animated via fig.show().
+    A is array with 4 axis (the first one must be "time" axis).
+    X,Y,Z are space meshgrids.
+    """
+    points = A.shape[0] # number of frames
+    frames = [] # we will here store animation frames
+    for t in range(points): # iterating through frames
+        frames.append(go.Frame(data=go.Isosurface(
+            x = X.flatten(),
+            y = Y.flatten(),
+            z = Z.flatten(),
+            value = A[t].flatten(),
+            isomin = iso_min,
+            isomax = iso_max,
+            opacity = opacity,
+            colorscale = color_scale,
+            surface_count = iso_surf_n,
+            colorbar_nticks = iso_surf_n,
+            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
+            )))
+        
+    fig = go.Figure(
+        data=go.Isosurface(
+            x = X.flatten(),
+            y = Y.flatten(),
+            z = Z.flatten(),
+            value = A[0].flatten(),
+            isomin = iso_min,
+            isomax = iso_max,
+            opacity = opacity,
+            colorscale = color_scale,
+            surface_count = iso_surf_n,
+            colorbar_nticks = iso_surf_n,
+            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
+            ),
+            layout=go.Layout(title=title,
+                             updatemenus=[dict(type="buttons",
+                                              buttons=[dict(label="Play",
+                                                            method="animate",
+                                                            args=[None])])]),
+            frames=frames)
+
+    return fig
+    
 def plot_3D(X, Y, Z, 
             ax,
             title = "plot_tile", 

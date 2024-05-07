@@ -10,6 +10,7 @@ from StreamlitSolvers import projection_solver_static, projection_solver_var_b, 
 
 # plotting imports 
 import plotly.graph_objects as go
+from PlottingUtils import plotly_animate_3d
 
 # other imports
 import streamlit as st 
@@ -362,23 +363,12 @@ if method == "Projection":
                                                                                g1, g2, g3,
                                                                                kappa, Bx_vals, By_vals, Bz_vals, 
                                                                                points_b, nr_of_soln, dim, possible_statess)
+                
         # Plotting solutions
         with row5[0].container():   
             if 'eig-solns_variable_b' in st.session_state: # if we calculated the solutions
                 eigvals, eigvects_orbi, eigvects_spin = st.session_state['eig-solns_variable_b']
-                energy_val = st.empty() # initializing energy value
-                mag_val = st.empty() # initializing magnetic field value
                 
-                bn = st.number_input("$B$-value", 
-                                     min_value=0, max_value= int(points_b - 1), 
-                                     value = 0 , step=None, format=None, 
-                                     help="""Select for which magnetic field value to plot.""",
-                                     label_visibility="visible") # magnetic field index
-                n_level = st.number_input("Energy level", 
-                                          min_value=0, max_value= int(nr_of_soln - 1), 
-                                          value = 0 , step=None, format=None, 
-                                          help="""Select the energy level to display.""",
-                                          label_visibility="visible") # energy level index
                 dimx = st.number_input(r"dim$_x$", 
                                      min_value=1, max_value=None, 
                                      value = 30 , step=None, format=None, 
@@ -399,26 +389,21 @@ if method == "Projection":
                                 boundy_low : boundy_upp : dimy*1j,
                                 boundz_low : boundz_upp : dimz*1j] # meshgrid
                 
-                p_dist = Abs(eigfn(X, Y, Z,
-                                   eigvects_orbi[bn, n_level], possible_statess,
-                                   Lx, Ly, Lz))**2
+                with st.spinner("Calculating probability distribution"):
+                    p_dist = zeros((points_b, nr_of_soln, dimx, dimy, dimz))
+                    for t in range(points_b):
+                        for n in range(nr_of_soln):
+                            p_dist[t, n] = Abs(eigfn(X, Y, Z,
+                                               eigvects_orbi[t, n], possible_statess,
+                                               Lx, Ly, Lz))**2
+                            
+                n_level = st.number_input("Energy level", 
+                                          min_value=0, max_value= int(nr_of_soln - 1), 
+                                          value = 0 , step=None, format=None, 
+                                          help="""Select the energy level to display.""",
+                                          label_visibility="visible") # energy level index
     
-                fig_state = go.Figure(data=go.Isosurface(
-                    x = X.flatten(),
-                    y = Y.flatten(),
-                    z = Z.flatten(),
-                    value = p_dist.flatten(),
-                    isomin = None,
-                    isomax = None,
-                    opacity = 0.6,
-                    colorscale = "rdbu_r",
-                    surface_count = 6,
-                    colorbar_nticks = 6,
-                    caps=dict(x_show=False, y_show=False, z_show=False)
-                    ))
-                
-                energy_val.write(f"E = {Round(eigvals[bn, n_level],2)}")
-                mag_val.write(f"B = ({Round(Bx_vals[bn],2)},{Round(By_vals[bn],2)},{Round(Bz_vals[bn],2)}) ")
+                fig_state = plotly_animate_3d(p_dist[:,n_level,:,:,:], X, Y, Z)
                 
         # Plotting 
         if 'eig-solns_variable_b' in st.session_state: # if we calculated the solutions
@@ -445,12 +430,6 @@ if method == "Projection":
                 if 'eig-solns_t' in st.session_state: # if we calculated the solutions
                     eigvals, eigvects_orbi, eigvects_spin = st.session_state['eig-solns_t']
                     
-                    tn = st.number_input("$t$-value", 
-                                         min_value=0, max_value= int(points_t - 1), 
-                                         value = 0 , step=None, format=None, 
-                                         help="""Select for which moment in time to plot.""",
-                                         label_visibility="visible") # magnetic field index
-
                     dimx = st.number_input(r"dim$_x$", 
                                          min_value=1, max_value=None, 
                                          value = 30 , step=None, format=None, 
@@ -471,23 +450,14 @@ if method == "Projection":
                                     boundy_low : boundy_upp : dimy*1j,
                                     boundz_low : boundz_upp : dimz*1j] # meshgrid
                     
-                    p_dist = Abs(eigfn(X, Y, Z,
-                                       eigvects_orbi[tn], possible_statess,
-                                       Lx, Ly, Lz))**2
+                    with st.spinner("Calculating probability distribution"):
+                        p_dist = zeros((points_t, dimx, dimy, dimz))
+                        for t in range(points_t):
+                            p_dist[t] = Abs(eigfn(X, Y, Z,
+                                                  eigvects_orbi[t], possible_statess,
+                                                  Lx, Ly, Lz))**2
         
-                    fig_state = go.Figure(data=go.Isosurface(
-                        x = X.flatten(),
-                        y = Y.flatten(),
-                        z = Z.flatten(),
-                        value = p_dist.flatten(),
-                        isomin = None,
-                        isomax = None,
-                        opacity = 0.6,
-                        colorscale = "rdbu_r",
-                        surface_count = 6,
-                        colorbar_nticks = 6,
-                        caps=dict(x_show=False, y_show=False, z_show=False)
-                        ))
+                    fig_state = plotly_animate_3d(p_dist, X, Y, Z)
                                         
             # Plotting 
             if 'eig-solns_t' in st.session_state: # if we calculated the solutions

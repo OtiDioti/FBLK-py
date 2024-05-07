@@ -12,12 +12,12 @@ sys.path.append(prev_dir+'/Modules') # appending modules folder
 from UsefulFunctions import J0, Jx, Jy, Jz, anti_comm, possible_states
 from GetInputProjection_Vectorized import get_input
 from HamiltonianBulkProjection import psi_tot
-from PlottingUtils import IsoSurface
+from PlottingUtils import IsoSurface, plotly_animate_3d
 
 # other imports
 from scipy.sparse import kron, eye
 from scipy.sparse.linalg import eigsh
-from numpy import pi, array, ones, zeros, diff, mgrid, transpose
+from numpy import pi, array, ones, zeros, diff, mgrid, transpose, linspace
 from numpy import sum as Sum
 from numpy.linalg import norm
 #%%
@@ -185,7 +185,7 @@ gk = g1 + 2.5 * gs # spherical approx
 points = 10
 zero = zeros(points)
 one = ones(points)
-bz = 0 * one
+bz = linspace(0, 1, points)
 B = array([zero, zero, bz]).T # magnetic field vector
 
 Ac = array([[zero,zero,zero,zero],
@@ -249,24 +249,29 @@ for i in range(points):
                    kappa = kappa, B = B[i]))
 #%% Obtaining Eigvals and Eigvects
 k = 10 # nr of solutions
-eigvals, eigvects = eigsh(H[0], k = k, which = "SM") # for CPU
-eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
-tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
-sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
-eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
-eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
+eigenvalues = []
+eigenvector = []
+for t in range(points):
+    eigvals, eigvects = eigsh(H[t], k = k, which = "SM") # for CPU
+    eigvects = eigvects / norm(eigvects, axis = 0)[None, :] # normalizing eigenvectors
+    tmpzip = zip(eigvects.T, eigvals) # zipping eigenvectors with eigenvalues
+    sort = sorted(tmpzip, key=lambda x: x[1]) # sorting vectors according to their eigenvalue in increasing order
+    eigvects = array([sort[i][0] for i in range(len(sort))]) # extracting sorted eigenvectors
+    eigvals = array([sort[i][1] for i in range(len(sort))]) # extracting sorted eigenvalues
+    eigenvalues.append(eigvals)
+    eigenvector.append(eigvects)
 #%% tracing out spin components to obtain plottable eigenvectors
-spin_component = zeros((k, dim, 4), complex) # here we will store the eigenvectors spin components
-traced_out_psi = zeros((k, dim), complex) # here we will store eigenvectors with spin component traced out
+spin_component = zeros((points, k, dim, 4), complex) # here we will store the eigenvectors spin components
+traced_out_psi = zeros((points, k, dim), complex) # here we will store eigenvectors with spin component traced out
 
-for i in range(k): # iterating through eigenvectors
-    tmp = eigvects[i] # current eigenvector
-    for j in range(dim): # iterating through basis states
-        spin_component[i, j, :] = eigvects[i][j*4:j*4 + 4] # for each basis state we append the spin components (eg: the first 4 element of tmp correspond to |1,1,1,3/2>, |1,1,1,-3/2>, |1,1,1,1/2>, |1,1,1,-1/2>)
-    coeff =  Sum(spin_component[i], axis = 1)
-    traced_out_psi[i] = coeff / norm(coeff)
+for t in range(points):
+    for i in range(k): # iterating through eigenvectors
+        for j in range(dim): # iterating through basis states
+            spin_component[t, i, j, :] = eigenvector[t][i][j*4:j*4 + 4] # for each basis state we append the spin components (eg: the first 4 element of tmp correspond to |1,1,1,3/2>, |1,1,1,-3/2>, |1,1,1,1/2>, |1,1,1,-1/2>)
+        coeff =  Sum(spin_component[t, i], axis = 1)
+        traced_out_psi[t, i] = coeff / norm(coeff)
+#%% storing animation frames
 
-#%% plotting eigenfunctions
 def eigfn(X, Y, Z,
           basis_states_coeff,
           Lx, Ly, Lz):
@@ -284,6 +289,15 @@ def eigfn(X, Y, Z,
                                                Lx, Ly, Lz)
     eign_fn = eign_fn / norm(eign_fn)
     return eign_fn
+
+p_dist = zeros((points, dimx, dimy, dimz))
+for t in range(points):
+    p_dist[t] = abs(eigfn(X, Y, Z,
+                       traced_out_psi[t, 0],
+                       Lx, Ly, Lz))**2
+fig = plotly_animate_3d(p_dist, X, Y, Z)
+fig.show()
+#%% plotting static solution
         
 n = 0
 p_dist = abs(eigfn(X, Y, Z,
