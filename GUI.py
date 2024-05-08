@@ -18,6 +18,7 @@ from numpy import array, linspace, zeros, ones, transpose, mgrid, diff, cos
 from numpy import round as Round
 from numpy import sum as Sum
 from numpy import abs as Abs
+from numpy import max as Max
 from numpy.linalg import norm
 from scipy.sparse.linalg import eigsh, expm
 from stqdm import stqdm # tqdm-like progress bar
@@ -403,7 +404,7 @@ if method == "Projection":
                                           help="""Select the energy level to display.""",
                                           label_visibility="visible") # energy level index
     
-                fig_state = plotly_animate_3d(p_dist[:,n_level,:,:,:], X, Y, Z)
+                fig_state = plotly_animate_3d(p_dist[:,n_level,:,:,:], X, Y, Z, c_max = Max(p_dist))
                 
         # Plotting 
         if 'eig-solns_variable_b' in st.session_state: # if we calculated the solutions
@@ -457,7 +458,7 @@ if method == "Projection":
                                                   eigvects_orbi[t], possible_statess,
                                                   Lx, Ly, Lz))**2
         
-                    fig_state = plotly_animate_3d(p_dist, X, Y, Z)
+                    fig_state = plotly_animate_3d(p_dist, X, Y, Z, c_max = Max(p_dist))
                                         
             # Plotting 
             if 'eig-solns_t' in st.session_state: # if we calculated the solutions

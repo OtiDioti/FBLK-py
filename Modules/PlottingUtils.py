@@ -102,7 +102,7 @@ def IsoSurface(A, X, Y, Z,
 
 def plotly_animate_3d(A, X, Y, Z,
                       iso_min = None, iso_max = None,
-                      iso_surf_n = 10,
+                      iso_surf_n = 10, c_min = 0, c_max = 1,
                       color_scale = 'RdBu_r', opacity = 0.6,
                       x_show_caps = False, y_show_caps = False, z_show_caps = False,
                       title = None):
@@ -124,11 +124,13 @@ def plotly_animate_3d(A, X, Y, Z,
             colorscale = color_scale,
             surface_count = iso_surf_n,
             colorbar_nticks = iso_surf_n,
-            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
+            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps),
+            cmin = c_min,
+            cmax = c_max
             )))
         
     fig = go.Figure(
-        data=go.Isosurface(
+            data=go.Isosurface(
             x = X.flatten(),
             y = Y.flatten(),
             z = Z.flatten(),
@@ -139,14 +141,21 @@ def plotly_animate_3d(A, X, Y, Z,
             colorscale = color_scale,
             surface_count = iso_surf_n,
             colorbar_nticks = iso_surf_n,
-            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps)
+            caps=dict(x_show=x_show_caps, y_show=y_show_caps, z_show=z_show_caps),
+            cmin = c_min,
+            cmax = c_max
             ),
             layout=go.Layout(title=title,
                              updatemenus=[dict(type="buttons",
                                               buttons=[dict(label="Play",
                                                             method="animate",
-                                                            args=[None])])]),
+                                                            args=[None
+                                                                  ])])]),
             frames=frames)
+    
+    # fig.layout.updatemenus[0].buttons[0].args[0]['frame']['duration'] = 30
+    # fig.layout.updatemenus[0].buttons[0].args[0]['transition']['duration'] = 5
+
 
     return fig
     
