@@ -1,5 +1,7 @@
 # Four Bands Luttinger Kohn
-![Alt text](/Images/ground_state_planar_geometry.png)
+<p align="center">
+  <img src="Images/ground_state_planar_geometry.png" width="400" alt="Quantum Hamiltonian Dynamics">
+</p>
 ## Overview
 
 This repository contains an implementation of a numerical approach to fully solve the four bands Luttinger Kohn Hamiltonian using the finite element method. The solver is designed to accurately calculate the electronic structure of materials described by the four bands Luttinger Kohn Hamiltonian, providing insights into their physical properties. (Note: all units are to be considered in a.u., where $\hbar = m = e =1$.)
