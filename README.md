@@ -1,5 +1,5 @@
 # Four Bands Luttinger Kohn
-
+![Alt text](/Images/ground_state_planar_geometry.png)
 ## Overview
 
 This repository contains an implementation of a numerical approach to fully solve the four bands Luttinger Kohn Hamiltonian using the finite element method. The solver is designed to accurately calculate the electronic structure of materials described by the four bands Luttinger Kohn Hamiltonian, providing insights into their physical properties. (Note: all units are to be considered in a.u., where $\hbar = m = e =1$.)
@@ -10,7 +10,6 @@ The Luttinger-Kohn model is a widely used theoretical framework in condensed mat
 Thus, a detailed description of the electronic structure in materials with complex band structures, such as semiconductors with multiple valleys or anisotropic band dispersions can be achieved through this formalism.
 
 ## Features
-![Alt text](/Images/ground_state_planar_geometry.png)
 
 * **Projection Method Solver**: To deal with the FBLK Hamiltonian, the repository includes a a "projection" method, where the full Hamiltonian is projected onto a set of basis states for the "particle in a box" problem. Given a high enough number of basis states, this method provides a fast and reliable method to solve the problem.
 
